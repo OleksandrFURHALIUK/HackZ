@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<asmv1:assembly xsi:schemaLocation="urn:schemas-microsoft-com:asm.v1 assembly.adaptive.xsd" manifestVersion="1.0" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns="urn:schemas-microsoft-com:asm.v2" xmlns:asmv1="urn:schemas-microsoft-com:asm.v1" xmlns:asmv2="urn:schemas-microsoft-com:asm.v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:co.v1="urn:schemas-microsoft-com:clickonce.v1">
+  <asmv1:assemblyIdentity name="plcdemo.exe" version="1.0.0.1" publicKeyToken="4165a3a2bf9c2d54" language="neutral" processorArchitecture="msil" type="win32" />
+  <application />
+  <entryPoint>
+    <assemblyIdentity name="plcdemo" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
+    <commandLine file="plcdemo.exe" parameters="" />
+  </entryPoint>
+  <trustInfo>
+    <security>
+      <applicationRequestMinimum>
+        <PermissionSet Unrestricted="true" ID="Custom" SameSite="site" />
+        <defaultAssemblyRequest permissionSetReference="Custom" />
+      </applicationRequestMinimum>
+      <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
+        <!--
+          UAC Manifest Options
+          If you want to change the Windows User Account Control level replace the 
+          requestedExecutionLevel node with one of the following.
+
+        <requestedExecutionLevel  level="asInvoker" uiAccess="false" />
+        <requestedExecutionLevel  level="requireAdministrator" uiAccess="false" />
+        <requestedExecutionLevel  level="highestAvailable" uiAccess="false" />
+
+         If you want to utilize File and Registry Virtualization for backward 
+         compatibility then delete the requestedExecutionLevel node.
+    -->
+        <requestedExecutionLevel level="asInvoker" uiAccess="false" />
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+  <dependency>
+    <dependentOS>
+      <osVersionInfo>
+        <os majorVersion="5" minorVersion="1" buildNumber="2600" servicePackMajor="0" />
+      </osVersionInfo>
+    </dependentOS>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="preRequisite" allowDelayedBinding="true">
+      <assemblyIdentity name="Microsoft.Windows.CommonLanguageRuntime" version="2.0.50727.0" />
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="preRequisite" allowDelayedBinding="true">
+      <assemblyIdentity name="System.Core" version="3.5.0.0" publicKeyToken="b77a5c561934e089" language="neutral" processorArchitecture="msil" />
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="preRequisite" allowDelayedBinding="true">
+      <assemblyIdentity name="WindowsBase" version="3.0.0.0" publicKeyToken="31bf3856ad364e35" language="neutral" processorArchitecture="msil" />
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="plcdemo.exe" size="53248">
+      <assemblyIdentity name="plcdemo" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+        <dsig:DigestValue>erMUsNsudzpfm2yBbJVDmDiVELQ=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+<publisherIdentity name="CN=XPUSER\Administrator" issuerKeyHash="31987a3e257d3a84d12405ea282d6ee6868923ca" /><Signature Id="StrongNameSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" /><DigestValue>myTMqNgKGHvZ+82/w3cb01Odqts=</DigestValue></Reference></SignedInfo><SignatureValue>hvnil4VOzRmZon3tr09GBSYvB0myGMnvRkqCtvpoUkbwpkF6MnPsef5tBqfCPtV9+UtyhDetvCX0kIl53ZO9GRORFp8qWs3lH1bCZcNhdMDvidRIGwlo2lJ4OVvqk4LZ3k1u/Iv2ysuXhpaSJ/HHRsIRb+0+AheojbzKk72B4kw=</SignatureValue><KeyInfo Id="StrongNameKeyInfo"><KeyValue><RSAKeyValue><Modulus>ssBVn3ijaIRXJ4fznET4Il/DLw+vzbcLKTxNVetO0mX7FJUmjspl3pjxa05PEUeoJRud5QWEtmOlJvM2Amqj6pFE5S+ORRPfQ2XSBf8YPo6qzeYKQSt6q1/NlRAAk5TT6WVkLT5nk96lfYPAHXeOxB7F09SG9zmvt6dm85jUIns=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><msrel:RelData xmlns:msrel="http://schemas.microsoft.com/windows/rel/2005/reldata"><r:license xmlns:r="urn:mpeg:mpeg21:2003:01-REL-R-NS" xmlns:as="http://schemas.microsoft.com/windows/pki/2005/Authenticode"><r:grant><as:ManifestInformation Hash="dbaa9d53d31b77c3bfcdfbd97b180ad8a8cc249b" Description="" Url=""><as:assemblyIdentity name="plcdemo.exe" version="1.0.0.1" publicKeyToken="4165a3a2bf9c2d54" language="neutral" processorArchitecture="msil" type="win32" /></as:ManifestInformation><as:SignedBy /><as:AuthenticodePublisher><as:X509SubjectName>CN=XPUSER\Administrator</as:X509SubjectName></as:AuthenticodePublisher></r:grant><r:issuer><Signature Id="AuthenticodeSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" /><DigestValue>Fps9Z+OEL4h3EzhK7c+CZvKM33g=</DigestValue></Reference></SignedInfo><SignatureValue>DYvrf4ydpBBQbDBBixigE8oyjhaK+WQFrZFsovznc+H6aVXWJdSu6OcVhc0oF9b4sXWARuA8ZVQwN2X/b5ybWT0yFKQAFgXm/54W+B8z+UG87pvzbe0XxIUz721NbVwNCp3b9rnYWPeWF/j5oY24VmuGeSJNcsT58MyhCC89dJk=</SignatureValue><KeyInfo><KeyValue><RSAKeyValue><Modulus>ssBVn3ijaIRXJ4fznET4Il/DLw+vzbcLKTxNVetO0mX7FJUmjspl3pjxa05PEUeoJRud5QWEtmOlJvM2Amqj6pFE5S+ORRPfQ2XSBf8YPo6qzeYKQSt6q1/NlRAAk5TT6WVkLT5nk96lfYPAHXeOxB7F09SG9zmvt6dm85jUIns=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><X509Data><X509Certificate>MIIB4TCCAU6gAwIBAgIQ8iRlGx2WCY5N30gr3FQOqTAJBgUrDgMCHQUAMDMxMTAvBgNVBAMeKABYAFAAVQBTAEUAUgBcAEEAZABtAGkAbgBpAHMAdAByAGEAdABvAHIwHhcNMTEwMzExMDczMjQ2WhcNMTIwMzEwMTMzMjQ2WjAzMTEwLwYDVQQDHigAWABQAFUAUwBFAFIAXABBAGQAbQBpAG4AaQBzAHQAcgBhAHQAbwByMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCywFWfeKNohFcnh/OcRPgiX8MvD6/NtwspPE1V607SZfsUlSaOymXemPFrTk8RR6glG53lBYS2Y6Um8zYCaqPqkUTlL45FE99DZdIF/xg+jqrN5gpBK3qrX82VEACTlNPpZWQtPmeT3qV9g8Add47EHsXT1Ib3Oa+3p2bzmNQiewIDAQABMAkGBSsOAwIdBQADgYEAGOjC7tE6bqccs79koTRRrUlE7mxPc0W19q9G4ThS1g4BCECkBvIa5cD1/+FK1bRh9UHc4+cEDAOn+JvpaLIF1Qft9kYQwTIoN/M9rqPdqTfLGXrz2xytiM+sTiVmg3Lx6pSFMI8JO15VnC7Kgcjt77NLqR4jE027s/Z8jg0cMPw=</X509Certificate></X509Data></KeyInfo></Signature></r:issuer></r:license></msrel:RelData></KeyInfo></Signature></asmv1:assembly>
