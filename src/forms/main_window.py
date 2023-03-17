@@ -25,8 +25,6 @@ class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         uic.loadUi(os.path.abspath('src/forms/main_window.ui'), self)
-        # setup user interface
-        self.setup_ui()
 
         # define widgets
         # transactions table
@@ -55,6 +53,17 @@ class MainWindow(QMainWindow):
         self.menu_settings: QMenu = self.findChild(QMenu, 'menu_settings')
         self.action_show_connecting_settings: QAction = self.findChild(QAction, 'show_connection_settings')
 
+        # define zk
+        self.wait_dialog = WaitPopUpWindow(self)
+        self.zk_thread_pool = QThreadPool()
+        self.zk_thread_pool.setMaxThreadCount(2)
+        print("Multithreading with maximum %d threads" % self.zk_thread_pool.maxThreadCount())
+        self.zk_loader = ZKLoader()
+
+        # setup user interface
+        self.setup_ui()
+
+    def setup_ui(self):
         # define events handler
         self.btn_search.clicked.connect(self.btn_search_clicked_handler)
         self.btn_add_transaction.clicked.connect(self.btn_add_transaction_clicked_handler)
@@ -66,23 +75,20 @@ class MainWindow(QMainWindow):
         self.btn_download_transactions_to_device.clicked.connect(
             self.btn_download_transactions_to_device_clicked_handler)
 
+        # setting auto calculate rows count
+        self.transactions_table.model().rowsRemoved.connect(self.calculate_rows)
+        self.transactions_table.model().rowsInserted.connect(self.calculate_rows)
+
         # menu settings
         self.action_show_connecting_settings.triggered.connect(self.show_connecting_settings)
 
-        # define zk
-        # configure zk download and upload in another thread
-        self.wait_dialog = WaitPopUpWindow(self)
-        self.zk_thread_pool = QThreadPool()
-        self.zk_thread_pool.setMaxThreadCount(2)
-        print("Multithreading with maximum %d threads" % self.zk_thread_pool.maxThreadCount())
-        self.zk_loader = ZKLoader()
         # configure signals for closing wait window
         self.zk_loader.finished.connect(self.wait_dialog.allow_close)
         self.zk_loader.finished.connect(self.wait_dialog.close)
-        # update transactions table when upload from device
+
+        # update transactions table when finished upload from device
         self.zk_loader.upload_finished.connect(self.update_transactions_table)
 
-    def setup_ui(self):
         # setting first day in current month in start datetime field
         self.field_start_date_time.setCalendarPopup(True)
         self.field_start_date_time.setDate(datetime.now().date().replace(day=1))
@@ -108,10 +114,6 @@ class MainWindow(QMainWindow):
         self.transactions_table.setItemDelegateForColumn(2, AlignDelegate(self.transactions_table))
         self.transactions_table.setItemDelegateForColumn(3, AlignDelegate(self.transactions_table))
 
-        # setting auto calculate rows count
-        self.transactions_table.model().rowsRemoved.connect(self.calculate_rows)
-        self.transactions_table.model().rowsInserted.connect(self.calculate_rows)
-
     def show_connecting_settings(self):
         setting_window = CommSettingDialogUI(self)
         setting_window.exec()
@@ -123,8 +125,8 @@ class MainWindow(QMainWindow):
 
     def btn_search_clicked_handler(self):
         print('btn search clicked')
-        self.zk_transactions = load_transactions_from_file('transactions')
-        load_transactions_to_table(self.zk_transactions, self.transactions_table)
+        #self.zk_transactions = load_transactions_from_file('transactions')
+        load_transactions_to_table(self.zk_loader.transactions, self.transactions_table)
 
     def btn_add_transaction_clicked_handler(self):
         print('btn add record clicked')
@@ -151,6 +153,7 @@ class MainWindow(QMainWindow):
         print('btn clear transactions table')
         self.transactions_table.setRowCount(0)
         self.zk_loader.transactions.clear()
+        print(self.zk_loader.transactions)
 
     def btn_calculate_attendance_time_clicked_handler(self):
         print('btn calculate time clicked')
@@ -303,6 +306,7 @@ class ZKLoader(QObject):
                                   dllpath=os.path.abspath('pull_sdk/SDK-Ver2.2.0.220/plcommpro.dll'),
                                   device_model=ZK200)
         self.transactions = list()
+        self.filter_kwargs = dict()
 
     @pyqtSlot()
     def upload_from_device(self):
@@ -310,8 +314,9 @@ class ZKLoader(QObject):
         self.started.emit()
         self.upload_started.emit()
 
-        for t in self.zk_device.table('Transaction').where(pin='504'):
-            self.transactions.append(t)
+        # for t in self.zk_device.table('Transaction').where(pin='504'):
+        #     self.transactions.append(t)
+        print('filter kwargs:', self.filter_kwargs)
         self.upload_finished.emit()
         self.finished.emit()
 

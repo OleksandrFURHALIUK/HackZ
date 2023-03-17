@@ -23,6 +23,7 @@ class WaitPopUpWindow(QDialog):
         super(WaitPopUpWindow, self).__init__(parent)
         uic.loadUi(os.path.abspath('src/forms/wait_popup.ui'), self)
 
+        # define wait indicator
         self.wait_indicator = WaitingSpinner(self, roundness=100.0,
                                              fade=50.35,
                                              radius=10,
@@ -36,7 +37,7 @@ class WaitPopUpWindow(QDialog):
         self.wait_timer.setInterval(1000)
         self.wait_time: int = 0
         self.wait_timer.timeout.connect(self.update_wait_time)
-        self.wait_timer.timeout.connect(lambda: print(self.wait_time))
+        self.wait_timer.timeout.connect(lambda: print(f'wait time: {+self.wait_time} seconds'))
 
         self.allow_close_window: bool = False
         #self.setAttribute(Qt.WA_QuitOnClose, True)
