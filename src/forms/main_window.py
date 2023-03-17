@@ -109,7 +109,7 @@ class MainWindow(QMainWindow):
         # configure entry exit field
         self.filter_field_entry_exit.addItem('Any', None)
         for item in PassageDirection:
-            self.filter_field_entry_exit.addItem(item.name, item.value)
+            self.filter_field_entry_exit.addItem(item.name, item)
 
         # configure event type filter
         self.filter_field_event_type.addItem('Any', None)
@@ -120,7 +120,7 @@ class MainWindow(QMainWindow):
         # configure verify mode
         self.filter_field_verify_mode.addItem('Any', None)
         for item in VerifyMode:
-            self.filter_field_verify_mode.addItem(item.name, item.value)
+            self.filter_field_verify_mode.addItem(item.name, item)
 
         # change column wide in transactions table
         for i in range(self.transactions_table.columnCount()):
