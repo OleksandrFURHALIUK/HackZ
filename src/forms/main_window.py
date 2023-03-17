@@ -131,6 +131,7 @@ class MainWindow(QMainWindow):
         self.transactions_table.setItemDelegateForColumn(1, AlignDelegate(self.transactions_table))
         self.transactions_table.setItemDelegateForColumn(2, AlignDelegate(self.transactions_table))
         self.transactions_table.setItemDelegateForColumn(3, AlignDelegate(self.transactions_table))
+        self.transactions_table.setItemDelegateForColumn(3, ComboEventTypeDelegate(self.transactions_table))
 
     def show_connecting_settings(self):
         setting_window = CommSettingDialogUI(self)
@@ -236,9 +237,16 @@ class ComboEntryExitDelegate(QStyledItemDelegate):
         event_type = self.parent.item(self.parent.currentRow(), 4).text()
         if event_type == 'entry':
             self.parent.setItem(self.parent.currentRow(), 2, QTableWidgetItem('1'))
+            if not self.parent.item(self.parent.currentRow(),3):
+                self.parent.setItem(self.parent.currentRow(), 3, QTableWidgetItem('0'))
+            if not self.parent.item(self.parent.currentRow(), 6):
+                self.parent.setItem(self.parent.currentRow(), 6, QTableWidgetItem('only_card'))
         elif event_type == 'exit':
             self.parent.setItem(self.parent.currentRow(), 2, QTableWidgetItem('2'))
-
+            if not self.parent.item(self.parent.currentRow(), 3):
+                self.parent.setItem(self.parent.currentRow(), 3, QTableWidgetItem('0'))
+            if not self.parent.item(self.parent.currentRow(), 6):
+                self.parent.setItem(self.parent.currentRow(), 6, QTableWidgetItem('only_card'))
     # @pyqtSlot()
     def currentIndexChanged(self):
         print('index changed', self.sender())
@@ -251,22 +259,24 @@ class ComboEntryExitDelegate(QStyledItemDelegate):
 
 class ComboEventTypeDelegate(QStyledItemDelegate):
     def __init__(self, parent=None):
-        super(ComboEntryExitDelegate, self).__init__(parent)
-        self.items = ['0-Normal open', 'exit']
+        super(ComboEventTypeDelegate, self).__init__(parent)
         self.parent: QTableWidget = parent
 
-    def createEditor(self, parent, option, index):
-        combobox = QComboBox(parent)
-        combobox.addItems(self.items)
-        # combobox.setStyleSheet('selection-background-color: rgb(143, 240, 164);')
-        # combobox.setStyleSheet('selection-color: rgb(143, 140, 164);')
+    def initStyleOption(self, option, index):
+        """ initStyleOption(self, option: QStyleOptionViewItem, index: QModelIndex) """
+        super(ComboEventTypeDelegate, self).initStyleOption(option, index)
+        option.displayAlignment = Qt.AlignCenter
 
-        if index.data() == 'entry':
-            combobox.setCurrentIndex(0)
-        elif index.data() == 'exit':
-            combobox.setCurrentIndex(1)
-        else:
-            combobox.setCurrentIndex(0)
+    def createEditor(self, parent, option, index):
+
+        combobox = QComboBox(parent)
+        for key, value in EVENT_TYPES.items():
+            value: DocValue
+            combobox.addItem(f'{key} {value.doc}', key)
+
+        if self.parent.item(self.parent.currentRow(), 3):
+            print(self.parent.currentItem())
+            combobox.setCurrentIndex(int(self.parent.currentItem().text()))
         combobox.currentIndexChanged.connect(self.currentIndexChanged)
 
         combobox.currentTextChanged.connect(lambda value: self.currentTextChanged(index, value))
@@ -281,11 +291,9 @@ class ComboEventTypeDelegate(QStyledItemDelegate):
 
     def destroyEditor(self, editor, index):
         print('combo destroyed')
-        event_type = self.parent.item(self.parent.currentRow(), 4).text()
-        if event_type == 'entry':
-            self.parent.setItem(self.parent.currentRow(), 2, QTableWidgetItem('1'))
-        elif event_type == 'exit':
-            self.parent.setItem(self.parent.currentRow(), 2, QTableWidgetItem('2'))
+        self.parent.setItem(self.parent.currentRow(), 3, QTableWidgetItem(str(editor.currentData())))
+        #elif event_type == 'exit':
+            #self.parent.setItem(self.parent.currentRow(), 2, QTableWidgetItem('2'))
 
     # @pyqtSlot()
     def currentIndexChanged(self):
