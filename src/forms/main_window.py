@@ -1,7 +1,7 @@
 import typing
 from time import sleep
 from typing import List
-
+import os
 from PyQt5.QtCore import Qt, pyqtSlot, QObject, pyqtSignal, QThread, QTimer, pyqtProperty, QPropertyAnimation, \
     QThreadPool
 from PyQt5.QtGui import QStandardItemModel, QBrush, QColor, QPainter, QPixmap
@@ -24,7 +24,7 @@ from pyzkaccess import ZKAccess, ZK200
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
-        uic.loadUi('src/forms/main_window.ui', self)
+        uic.loadUi(os.getcwd()+'/src/forms/main_window.ui', self)
         # setup user interface
         self.setup_ui()
 
