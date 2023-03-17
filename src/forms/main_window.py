@@ -81,6 +81,8 @@ class MainWindow(QMainWindow):
         # configure signals for closing wait window
         self.zk_loader.finished.connect(self.wait_dialog.allow_close)
         self.zk_loader.finished.connect(self.wait_dialog.close)
+        # update transactions table when upload from device
+        self.zk_loader.upload_finished.connect(self.update_transactions_table)
 
     def setup_ui(self):
         # setting first day in current month in start datetime field
@@ -124,7 +126,7 @@ class MainWindow(QMainWindow):
     def btn_search_clicked_handler(self):
         print('btn search clicked')
         self.zk_transactions = load_transactions_from_file('transactions')
-        load_transactions_to_table(self.zk_transactions,self.transactions_table)
+        load_transactions_to_table(self.zk_transactions, self.transactions_table)
 
     def btn_add_transaction_clicked_handler(self):
         print('btn add record clicked')
@@ -171,7 +173,8 @@ class MainWindow(QMainWindow):
         self.zk_thread_pool.start(self.zk_loader.download_to_device)
         self.wait_dialog.show()
 
-
+    def update_transactions_table(self):
+        load_transactions_to_table(self.zk_transactions,self.transactions_table)
 class ComboEntryExitDelegate(QStyledItemDelegate):
 
     def __init__(self, parent=None):
@@ -282,7 +285,7 @@ class AlignDelegate(QStyledItemDelegate):
 class ZKLoader(QObject):
     from pyzkaccess import ZKAccess, ZK200
     upload_started = pyqtSignal()
-    upload_finished = pyqtSignal()
+    upload_finished = pyqtSignal(list)
 
     download_started = pyqtSignal()
     download_finished = pyqtSignal()
@@ -307,12 +310,14 @@ class ZKLoader(QObject):
         self.started.emit()
         self.upload_started.emit()
 
-        # with self.zk_device as zk:
-        #     self.transactions = zk.table('Transactions').where(filter_kwargs)
-        for i in range(10):
+        with self.zk_device as zk:
+            self.transactions = zk.table('Transaction').where(pin='504')
+        for tr in self.transactions:
+            print(tr)
+        for i in range(5):
             sleep(1)
             print('uploading', i)
-        self.upload_finished.emit()
+        self.upload_finished.emit(self.transactions)
         self.finished.emit()
 
     @pyqtSlot()
@@ -321,10 +326,10 @@ class ZKLoader(QObject):
         self.started.emit()
         self.download_started.emit()
 
-        #with self.zk_device as zk:
+        # with self.zk_device as zk:
         print('download trans', self.transactions)
         if self.transactions:
-                # zk.table('Transactions').upsert(self.transactions)
+            # zk.table('Transactions').upsert(self.transactions)
             for tr in self.transactions:
                 print(tr)
 
