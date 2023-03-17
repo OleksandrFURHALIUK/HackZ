@@ -77,7 +77,7 @@ class MainWindow(QMainWindow):
         self.zk_thread_pool = QThreadPool()
         self.zk_thread_pool.setMaxThreadCount(2)
         print("Multithreading with maximum %d threads" % self.zk_thread_pool.maxThreadCount())
-        self.zk_loader = ZKLoader(transactions=self.zk_transactions)
+        self.zk_loader = ZKLoader()
         # configure signals for closing wait window
         self.zk_loader.finished.connect(self.wait_dialog.allow_close)
         self.zk_loader.finished.connect(self.wait_dialog.close)
@@ -310,11 +310,8 @@ class ZKLoader(QObject):
         """Long-running task."""
         self.started.emit()
         self.upload_started.emit()
-
         print(self.zk_device.device.serial_number)
         self.transactions = self.zk_device.table('Transaction').where(pin='504')
-        for tr in self.transactions:
-            print(tr)
         self.upload_finished.emit()
         self.finished.emit()
 
