@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QMainWindow, QComboBox, QLabel, QPushButton, QTableW
     QStyleOptionViewItem, QWidget
 from PyQt5 import uic, QtCore
 from datetime import datetime, timedelta, time
+from pyzkaccess.enums import PassageDirection, EVENT_TYPES, VerifyMode
 
 from pyqtspinner import WaitingSpinner
 
@@ -18,7 +19,7 @@ from forms.wait_popup import WaitPopUpWindow
 from utils import load_transactions_from_file, save_transactions_to_file, load_transactions_to_table, \
     get_transactions_from_table
 
-from pyzkaccess import ZKAccess, ZK200
+from pyzkaccess import ZKAccess, ZK200, DocValue
 
 
 class MainWindow(QMainWindow):
@@ -47,6 +48,8 @@ class MainWindow(QMainWindow):
         self.filter_field_card: QLineEdit = self.findChild(QLineEdit, 'filter_field_card')
         self.filter_field_door: QComboBox = self.findChild(QComboBox, 'filter_field_door')
         self.filter_field_event_type: QComboBox = self.findChild(QComboBox, 'filter_field_event_type')
+        self.filter_field_entry_exit: QComboBox = self.findChild(QComboBox, 'filter_field_entry_exit')
+        self.filter_field_verify_mode: QComboBox = self.findChild(QComboBox, 'filter_field_verify_mode')
         self.filter_field_start_date_time: QDateTimeEdit = self.findChild(QDateTimeEdit, 'filter_field_start_date_time')
         self.filter_field_end_date_time: QDateTimeEdit = self.findChild(QDateTimeEdit, 'filter_field_end_date_time')
         # menu
@@ -101,8 +104,23 @@ class MainWindow(QMainWindow):
         self.filter_field_end_date_time.setDate(last_day.date())
         self.filter_field_end_date_time.setTime(time(hour=23, minute=59, second=59))
 
-        self.filter_field_door.addItems(['', '1', '2'])
-        self.filter_field_event_type.addItems(['', 'entry', 'exit'])
+        self.filter_field_door.addItems(['Any', '1', '2'])
+
+        # configure entry exit field
+        self.filter_field_entry_exit.addItem('Any', None)
+        for item in PassageDirection:
+            self.filter_field_entry_exit.addItem(item.name, item.value)
+
+        # configure event type filter
+        self.filter_field_event_type.addItem('Any', None)
+        for key, value in EVENT_TYPES.items():
+            value: DocValue
+            self.filter_field_event_type.addItem(f'{key} {value.doc}', key)
+
+        # configure verify mode
+        self.filter_field_verify_mode.addItem('Any', None)
+        for item in VerifyMode:
+            self.filter_field_verify_mode.addItem(item.name, item.value)
 
         # change column wide in transactions table
         for i in range(self.transactions_table.columnCount()):
@@ -311,10 +329,11 @@ class ZKLoader(QObject):
         """Long-running task."""
         self.started.emit()
         self.upload_started.emit()
+
         self.transactions.clear()
         self.get_filter_kwargs()
-        for t in self.zk_device.table('Transaction').where(**self.filter_kwargs):
-            self.transactions.append(t)
+        #for t in self.zk_device.table('Transaction').where(**self.filter_kwargs):
+            #self.transactions.append(t)
         print('filter kwargs:', self.filter_kwargs)
         self.upload_finished.emit()
         self.finished.emit()
@@ -341,15 +360,28 @@ class ZKLoader(QObject):
         else:
             self.filter_kwargs.pop('card', None)
 
-        if self.parent().filter_field_door.currentText():
-            self.filter_kwargs['door'] = self.parent().filter_field_door.currentText()
-        else:
+        if self.parent().filter_field_door.currentText() == 'Any':
             self.filter_kwargs.pop('door', None)
-
-        if self.parent().filter_field_event_type.currentText():
-            self.filter_kwargs['event_type'] = self.parent().filter_field_event_type.currentText()
         else:
+            self.filter_kwargs['door'] = self.parent().filter_field_door.currentText()
+
+        if self.parent().filter_field_event_type.currentText() == 'Any':
             self.filter_kwargs.pop('event_type', None)
+        else:
+            self.filter_kwargs['event_type'] = self.parent().filter_field_event_type.currentData()
+
+        # entry exit filter
+        if self.parent().filter_field_entry_exit.currentText() == 'Any':
+            self.filter_kwargs.pop('entry_exit', None)
+        else:
+            self.filter_kwargs['entry_exit'] = self.parent().filter_field_entry_exit.currentData()
+
+        # verify mode filter
+        if self.parent().filter_field_verify_mode.currentText() == 'Any':
+            self.filter_kwargs.pop('verify_mode', None)
+        else:
+            self.filter_kwargs['verify_mode'] = self.parent().filter_field_verify_mode.currentData()
+
 
 class Spinner(QWidget):
     def __init__(self, parent=None):

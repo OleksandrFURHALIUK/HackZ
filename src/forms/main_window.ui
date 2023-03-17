@@ -35,6 +35,19 @@
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="1">
      <layout class="QGridLayout" name="filter_gridLayout">
+      <item row="3" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>PIN</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="4">
+       <widget class="QComboBox" name="filter_field_entry_exit"/>
+      </item>
       <item row="7" column="1">
        <widget class="QLineEdit" name="filter_field_card">
         <property name="sizePolicy">
@@ -42,6 +55,59 @@
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
+        </property>
+        <property name="text">
+         <string>1</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="6">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Start DateTime</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="wordWrap">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="6">
+       <widget class="QDateTimeEdit" name="filter_field_start_date_time">
+        <property name="calendarPopup">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="2">
+       <widget class="QComboBox" name="filter_field_door">
+        <property name="focusPolicy">
+         <enum>Qt::WheelFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="4">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>ENTRY_EXIT</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="wordWrap">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="7">
+       <widget class="QDateTimeEdit" name="filter_field_end_date_time">
+        <property name="calendarPopup">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -55,13 +121,20 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>PIN</string>
+      <item row="7" column="8">
+       <widget class="QPushButton" name="btn_download_transactions_to_device">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
+        <property name="text">
+         <string>Завантажити до пристрою</string>
+        </property>
+        <property name="icon">
+         <iconset theme="document-send">
+          <normaloff>../../../../.designer/backup</normaloff>../../../../.designer/backup</iconset>
         </property>
        </widget>
       </item>
@@ -81,7 +154,7 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="5">
+      <item row="3" column="7">
        <widget class="QLabel" name="label_5">
         <property name="text">
          <string>End DateTime</string>
@@ -100,70 +173,7 @@
         </property>
        </widget>
       </item>
-      <item row="7" column="2">
-       <widget class="QComboBox" name="filter_field_door">
-        <property name="focusPolicy">
-         <enum>Qt::WheelFocus</enum>
-        </property>
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="0">
-       <widget class="QSpinBox" name="filter_field_pin">
-        <property name="wrapping">
-         <bool>false</bool>
-        </property>
-        <property name="frame">
-         <bool>true</bool>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-        <property name="maximum">
-         <number>9999</number>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="2">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>DOOR</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="5">
-       <widget class="QDateTimeEdit" name="filter_field_end_date_time">
-        <property name="calendarPopup">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="4">
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>Start DateTime</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-        <property name="wordWrap">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="4">
-       <widget class="QDateTimeEdit" name="filter_field_start_date_time">
-        <property name="calendarPopup">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="6">
+      <item row="3" column="8">
        <widget class="QPushButton" name="btn_upload_transactions_from_device">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -183,22 +193,47 @@
         </property>
        </widget>
       </item>
-      <item row="7" column="6">
-       <widget class="QPushButton" name="btn_download_transactions_to_device">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
+      <item row="3" column="2">
+       <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>Завантажити до пристрою</string>
+         <string>DOOR</string>
         </property>
-        <property name="icon">
-         <iconset theme="document-send">
-          <normaloff>../../../../.designer/backup</normaloff>../../../../.designer/backup</iconset>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
         </property>
        </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QSpinBox" name="filter_field_pin">
+        <property name="wrapping">
+         <bool>false</bool>
+        </property>
+        <property name="frame">
+         <bool>true</bool>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="maximum">
+         <number>9999</number>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="5">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>VERIFY_MODE</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="wordWrap">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="5">
+       <widget class="QComboBox" name="filter_field_verify_mode"/>
       </item>
      </layout>
     </item>
