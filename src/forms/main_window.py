@@ -150,7 +150,7 @@ class MainWindow(QMainWindow):
     def btn_clear_transactions_table_clicked_handler(self):
         print('btn clear transactions table')
         self.transactions_table.setRowCount(0)
-        self.zk_transactions.clear()
+        self.zk_loader.transactions.clear()
 
     def btn_calculate_attendance_time_clicked_handler(self):
         print('btn calculate time clicked')
@@ -166,13 +166,14 @@ class MainWindow(QMainWindow):
 
     def btn_download_transactions_to_device_clicked_handler(self):
         print('download button pressed')
-        self.zk_transactions = get_transactions_from_table(self.transactions_table)
+        self.zk_loader.transactions = get_transactions_from_table(self.transactions_table)
         self.wait_dialog.setWindowTitle('Downloading to device')
         self.zk_thread_pool.start(self.zk_loader.download_to_device)
         self.wait_dialog.show()
 
     def update_transactions_table(self):
         load_transactions_to_table(self.zk_loader.transactions, self.transactions_table)
+
 
 class ComboEntryExitDelegate(QStyledItemDelegate):
 
