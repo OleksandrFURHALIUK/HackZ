@@ -174,7 +174,8 @@ class MainWindow(QMainWindow):
         self.wait_dialog.show()
 
     def update_transactions_table(self):
-        load_transactions_to_table(self.zk_transactions,self.transactions_table)
+        load_transactions_to_table(self.zk_loader.transactions, self.transactions_table)
+
 class ComboEntryExitDelegate(QStyledItemDelegate):
 
     def __init__(self, parent=None):
@@ -295,17 +296,17 @@ class ZKLoader(QObject):
     progress = pyqtSignal(int)
 
     def __init__(self, parent=None,
-                 ip_addr='192.168.5.198', port=4370, password='ad256580', transactions=['0'], upload_filter={}):
+                 ip_addr='192.168.5.198', port=4370, password='ad256580'):
         super().__init__(parent)
 
         self.connection_string = f'protocol=TCP,ipaddress={ip_addr},port={port},timeout=4000,passwd={password}'
         self.zk_device = ZKAccess(connstr=self.connection_string,
-                                  dllpath='pull_sdk/SDK-Ver2.2.0.220/plcommpro.dll',
+                                  dllpath=os.path.abspath('pull_sdk/SDK-Ver2.2.0.220/plcommpro.dll'),
                                   device_model=ZK200)
-        self.transactions = transactions
+        self.transactions = list()
 
     @pyqtSlot()
-    def upload_from_device(self, filter_kwargs=''):
+    def upload_from_device(self):
         """Long-running task."""
         self.started.emit()
         self.upload_started.emit()
@@ -314,10 +315,7 @@ class ZKLoader(QObject):
         self.transactions = self.zk_device.table('Transaction').where(pin='504')
         for tr in self.transactions:
             print(tr)
-        for i in range(5):
-            sleep(1)
-            print('uploading', i)
-        self.upload_finished.emit(self.transactions)
+        self.upload_finished.emit()
         self.finished.emit()
 
     @pyqtSlot()
