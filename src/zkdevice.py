@@ -13,17 +13,13 @@ from pyzkaccess import VerifyMode, PassageDirection
 from pyzkaccess.enums import VerifyMode, PassageDirection
 
 
-def get_transactions_from_device():
-    pass
-
-
-class HackZ:
-    def __init__(self):
-        self.connstr = 'protocol=TCP,ipaddress=192.168.5.198,port=4370,timeout=4000,passwd=ad256580'
+class ZKDevice:
+    def __init__(self, ip_addr='192.168.5.198', port='4370', password='ad256580'):
+        self.connection_string = f'protocol=TCP,ipaddress={ip_addr},port={port},timeout=4000,passwd={password}'
         self.device: ZKAccess = None
 
     def connect(self):
-        self.device = ZKAccess(connstr=self.connstr,
+        self.device = ZKAccess(connstr=self.connection_string,
                                dllpath='pull_sdk/SDK-Ver2.2.0.220/plcommpro.dll',
                                device_model=ZK200)
         # self.device.connect()
@@ -46,6 +42,11 @@ class HackZ:
             transactions.append(record)
         return transactions
 
+    def write_transactions_to_device(self, transactions):
+        if transactions:
+            with self.device as zk:
+                zk.device.table('Transaction').upsert(transactions)
+
     def __enter__(self):
         self.connect()
         return self
@@ -54,52 +55,8 @@ class HackZ:
         self.device.disconnect()
 
 
-def save_transactions_to_file(transactions: List[Transaction], filename: str = 'transactions') -> None:
-    """
-    :param transactions: list of transactions
-    :param filename: name of file
-    :return: None
-    """
-    with open(filename, 'x') as file:
-        for t in transactions:
-            row = f'card={t.card}, ' \
-                  f'door={t.door}, ' \
-                  f'entry_exit={t.entry_exit}, ' \
-                  f'event_type={t.event_type}, ' \
-                  f'pin={t.pin}, ' \
-                  f'time={t.time}, ' \
-                  f'verify_mode={t.verify_mode}'
-            row += '\n'
-            file.write(row)
-
-
-def load_transactions_from_file(filename) -> List[Transaction]:
-    """
-    :param filename: file that contain records
-    :return: list of transactions
-    """
-    with open(filename, 'r') as file:
-        transactions = []
-        for row in file.readlines():
-            kwargs = {}
-            for i in row.strip().split(', '):
-                k = i.split('=')[0]
-                v = i.split('=')[1]
-                if k == 'door' or k == 'event_type':
-                    kwargs[k] = int(v)
-                elif k == 'entry_exit' or k == 'verify_mode':
-                    kwargs[k] = eval(v)
-                elif k == 'time':  # 2023-02-24 07:41:14
-                    kwargs[k] = datetime.strptime(v, '%Y-%m-%d %H:%M:%S')
-                else:
-                    kwargs[k] = v
-            transactions.append(Transaction(**kwargs))
-
-        return transactions
-
-
 def main():
-    with HackZ() as zk:
+    with ZKDevice() as zk:
         # new_transaction = Transaction(card=str(2819090),
         #                               pin=str(142),
         #                               verify_mode=VerifyMode(4),
@@ -109,10 +66,10 @@ def main():
         #                               time=ZKDatetimeUtils.zkctime_to_datetime(743555390)).with_zk(zk.device)
         transactions = zk.get_transaction_from_device(card='1498402')
         print(transactions)
-        save_transactions_to_file(transactions)
-        zk.get_transaction_from_device()
+        #save_transactions_to_file(transactions)
+        #zk.get_transaction_from_device()
 
-    transactions = load_transactions_from_file('transactions')
+    #transactions = load_transactions_from_file('../transactions')
     print(transactions)
 
 
