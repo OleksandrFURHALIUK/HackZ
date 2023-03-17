@@ -308,7 +308,6 @@ class ZKLoader(QObject):
         """Long-running task."""
         self.started.emit()
         self.upload_started.emit()
-        print(self.zk_device.device.serial_number)
 
         for t in self.zk_device.table('Transaction').where(pin='504'):
             self.transactions.append(t)
@@ -321,17 +320,8 @@ class ZKLoader(QObject):
         self.started.emit()
         self.download_started.emit()
 
-        # with self.zk_device as zk:
-        print('download trans', self.transactions)
-        if self.transactions:
-            # zk.table('Transactions').upsert(self.transactions)
-            for tr in self.transactions:
-                print(tr)
-
-        for i in range(10):
-            sleep(1)
-            print('downloading', i)
-            self.progress.emit(i + 1)
+        self.zk_device.table('Transaction').upsert(self.transactions)
+            #self.progress.emit(i + 1)
         self.finished.emit()
         self.download_finished.emit()
 
