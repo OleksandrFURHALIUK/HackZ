@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from PyQt5.QtWidgets import QDialog, QLineEdit
 from PyQt5 import uic
@@ -8,7 +9,7 @@ from PyQt5.QtGui import QIntValidator
 class CommSettingDialogUI(QDialog):
     def __init__(self, parent=None):
         super(CommSettingDialogUI, self).__init__(parent)
-        uic.loadUi(os.getcwd()+'/src/forms/comm_setting_dialog.ui', self)
+        uic.loadUi(os.path.abspath('src/forms/comm_setting_dialog.ui'), self)
 
         # define widgets
         self.field_ip_addr: QLineEdit = self. findChild(QLineEdit, 'field_ip_addr')

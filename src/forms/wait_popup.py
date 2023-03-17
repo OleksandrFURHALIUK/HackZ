@@ -21,7 +21,7 @@ from utils import load_transactions_from_file, save_transactions_to_file, load_t
 class WaitPopUpWindow(QDialog):
     def __init__(self, parent=None):
         super(WaitPopUpWindow, self).__init__(parent)
-        uic.loadUi(os.getcwd()+'/src/forms/wait_popup.ui', self)
+        uic.loadUi(os.path.abspath('src/forms/wait_popup.ui'), self)
 
         self.wait_indicator = WaitingSpinner(self, roundness=100.0,
                                              fade=50.35,

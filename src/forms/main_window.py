@@ -24,7 +24,7 @@ from pyzkaccess import ZKAccess, ZK200
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
-        uic.loadUi(os.getcwd()+'/src/forms/main_window.ui', self)
+        uic.loadUi(os.path.abspath('src/forms/main_window.ui'), self)
         # setup user interface
         self.setup_ui()
 
