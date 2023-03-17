@@ -162,7 +162,7 @@ class MainWindow(QMainWindow):
 
     def btn_upload_transactions_from_device_clicked_handler(self):
         print('upload button pressed')
-
+        self.transactions_table.setRowCount(0)
         self.wait_dialog.setWindowTitle('Uploading from device')
         self.zk_thread_pool.start(self.zk_loader.upload_from_device)
         self.wait_dialog.show()
@@ -311,8 +311,8 @@ class ZKLoader(QObject):
         """Long-running task."""
         self.started.emit()
         self.upload_started.emit()
-        self.get_filter_kwargs()
-        for t in self.zk_device.table('Transaction').where(self.filter_kwargs):
+        self.transactions.clear()
+        for t in self.zk_device.table('Transaction').where(**self.filter_kwargs):
             self.transactions.append(t)
         print('filter kwargs:', self.filter_kwargs)
         self.upload_finished.emit()
