@@ -70,8 +70,6 @@ class MainWindow(QMainWindow):
         self.action_show_connecting_settings.triggered.connect(self.show_connecting_settings)
 
         # define zk
-        self.zk_transactions: List = []
-        self.zk_upload_filter: dict = {}
         # configure zk download and upload in another thread
         self.wait_dialog = WaitPopUpWindow(self)
         self.zk_thread_pool = QThreadPool()
