@@ -286,7 +286,7 @@ class AlignDelegate(QStyledItemDelegate):
 class ZKLoader(QObject):
     from pyzkaccess import ZKAccess, ZK200
     upload_started = pyqtSignal()
-    upload_finished = pyqtSignal(list)
+    upload_finished = pyqtSignal()
 
     download_started = pyqtSignal()
     download_finished = pyqtSignal()
