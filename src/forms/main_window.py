@@ -312,6 +312,7 @@ class ZKLoader(QObject):
         self.started.emit()
         self.upload_started.emit()
         self.transactions.clear()
+        self.get_filter_kwargs()
         for t in self.zk_device.table('Transaction').where(**self.filter_kwargs):
             self.transactions.append(t)
         print('filter kwargs:', self.filter_kwargs)
