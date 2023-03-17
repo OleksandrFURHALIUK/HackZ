@@ -36,7 +36,7 @@
     <item row="0" column="1">
      <layout class="QGridLayout" name="filter_gridLayout">
       <item row="7" column="1">
-       <widget class="QLineEdit" name="field_card">
+       <widget class="QLineEdit" name="filter_field_card">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -66,7 +66,7 @@
        </widget>
       </item>
       <item row="7" column="3">
-       <widget class="QComboBox" name="field_event_type"/>
+       <widget class="QComboBox" name="filter_field_event_type"/>
       </item>
       <item row="3" column="3">
        <widget class="QLabel" name="label_6">
@@ -101,7 +101,7 @@
        </widget>
       </item>
       <item row="7" column="2">
-       <widget class="QComboBox" name="field_door">
+       <widget class="QComboBox" name="filter_field_door">
         <property name="focusPolicy">
          <enum>Qt::WheelFocus</enum>
         </property>
@@ -111,7 +111,7 @@
        </widget>
       </item>
       <item row="7" column="0">
-       <widget class="QSpinBox" name="field_pin">
+       <widget class="QSpinBox" name="filter_field_pin">
         <property name="wrapping">
          <bool>false</bool>
         </property>
@@ -137,7 +137,7 @@
        </widget>
       </item>
       <item row="7" column="5">
-       <widget class="QDateTimeEdit" name="field_end_date_time">
+       <widget class="QDateTimeEdit" name="filter_field_end_date_time">
         <property name="calendarPopup">
          <bool>false</bool>
         </property>
@@ -157,7 +157,7 @@
        </widget>
       </item>
       <item row="7" column="4">
-       <widget class="QDateTimeEdit" name="field_start_date_time">
+       <widget class="QDateTimeEdit" name="filter_field_start_date_time">
         <property name="calendarPopup">
          <bool>false</bool>
         </property>

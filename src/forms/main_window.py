@@ -43,12 +43,12 @@ class MainWindow(QMainWindow):
         self.lbl_transactions_count: QLabel = self.findChild(QLabel, 'lbl_transactions_count')
         self.lbl_attendance_time: QLabel = self.findChild(QLabel, 'lbl_attendance_time')
         # filter fields
-        self.field_pin: QSpinBox = self.findChild(QSpinBox, 'field_pin')
-        self.field_card: QLineEdit = self.findChild(QLineEdit, 'field_card')
-        self.field_door: QComboBox = self.findChild(QComboBox, 'field_door')
-        self.field_event_type: QComboBox = self.findChild(QComboBox, 'field_event_type')
-        self.field_start_date_time: QDateTimeEdit = self.findChild(QDateTimeEdit, 'field_start_date_time')
-        self.field_end_date_time: QDateTimeEdit = self.findChild(QDateTimeEdit, 'field_end_date_time')
+        self.filter_field_pin: QSpinBox = self.findChild(QSpinBox, 'filter_field_pin')
+        self.filter_field_card: QLineEdit = self.findChild(QLineEdit, 'filter_field_card')
+        self.filter_field_door: QComboBox = self.findChild(QComboBox, 'filter_field_door')
+        self.filter_field_event_type: QComboBox = self.findChild(QComboBox, 'filter_field_event_type')
+        self.filter_field_start_date_time: QDateTimeEdit = self.findChild(QDateTimeEdit, 'filter_field_start_date_time')
+        self.filter_field_end_date_time: QDateTimeEdit = self.findChild(QDateTimeEdit, 'filter_field_end_date_time')
         # menu
         self.menu_settings: QMenu = self.findChild(QMenu, 'menu_settings')
         self.action_show_connecting_settings: QAction = self.findChild(QAction, 'show_connection_settings')
@@ -58,7 +58,7 @@ class MainWindow(QMainWindow):
         self.zk_thread_pool = QThreadPool()
         self.zk_thread_pool.setMaxThreadCount(2)
         print("Multithreading with maximum %d threads" % self.zk_thread_pool.maxThreadCount())
-        self.zk_loader = ZKLoader()
+        self.zk_loader = ZKLoader(self)
 
         # setup user interface
         self.setup_ui()
@@ -90,19 +90,19 @@ class MainWindow(QMainWindow):
         self.zk_loader.upload_finished.connect(self.update_transactions_table)
 
         # setting first day in current month in start datetime field
-        self.field_start_date_time.setCalendarPopup(True)
-        self.field_start_date_time.setDate(datetime.now().date().replace(day=1))
+        self.filter_field_start_date_time.setCalendarPopup(True)
+        self.filter_field_start_date_time.setDate(datetime.now().date().replace(day=1))
 
         # setting the last day in current month in end datetime field
-        self.field_end_date_time.setCalendarPopup(True)
+        self.filter_field_end_date_time.setCalendarPopup(True)
         next_month = datetime.today().replace(day=28) + timedelta(days=4)
         # subtracting the number of the current day brings us back one month
         last_day = next_month - timedelta(days=next_month.day)
-        self.field_end_date_time.setDate(last_day.date())
-        self.field_end_date_time.setTime(time(hour=23, minute=59, second=59))
+        self.filter_field_end_date_time.setDate(last_day.date())
+        self.filter_field_end_date_time.setTime(time(hour=23, minute=59, second=59))
 
-        self.field_door.addItems(['Any', '1-entry', '2-exit'])
-        self.field_event_type.addItems(['Any', 'entry', 'exit'])
+        self.filter_field_door.addItems(['', '1', '2'])
+        self.filter_field_event_type.addItems(['', 'entry', 'exit'])
 
         # change column wide in transactions table
         for i in range(self.transactions_table.columnCount()):
@@ -125,7 +125,7 @@ class MainWindow(QMainWindow):
 
     def btn_search_clicked_handler(self):
         print('btn search clicked')
-        #self.zk_transactions = load_transactions_from_file('transactions')
+        # self.zk_transactions = load_transactions_from_file('transactions')
         load_transactions_to_table(self.zk_loader.transactions, self.transactions_table)
 
     def btn_add_transaction_clicked_handler(self):
@@ -158,7 +158,7 @@ class MainWindow(QMainWindow):
     def btn_calculate_attendance_time_clicked_handler(self):
         print('btn calculate time clicked')
         self.lbl_attendance_time.setVisible(not self.lbl_attendance_time.isVisible())
-        print(self.field_event_type.currentText())
+        print(self.filter_field_event_type.currentText())
 
     def btn_upload_transactions_from_device_clicked_handler(self):
         print('upload button pressed')
@@ -286,7 +286,6 @@ class AlignDelegate(QStyledItemDelegate):
 
 
 class ZKLoader(QObject):
-    from pyzkaccess import ZKAccess, ZK200
     upload_started = pyqtSignal()
     upload_finished = pyqtSignal()
 
@@ -297,8 +296,7 @@ class ZKLoader(QObject):
     finished = pyqtSignal()
     progress = pyqtSignal(int)
 
-    def __init__(self, parent=None,
-                 ip_addr='192.168.5.198', port=4370, password='ad256580'):
+    def __init__(self, parent=None, ip_addr='192.168.5.198', port=4370, password='ad256580'):
         super().__init__(parent)
 
         self.connection_string = f'protocol=TCP,ipaddress={ip_addr},port={port},timeout=4000,passwd={password}'
@@ -313,9 +311,9 @@ class ZKLoader(QObject):
         """Long-running task."""
         self.started.emit()
         self.upload_started.emit()
-
-        # for t in self.zk_device.table('Transaction').where(pin='504'):
-        #     self.transactions.append(t)
+        self.get_filter_kwargs()
+        for t in self.zk_device.table('Transaction').where(self.filter_kwargs):
+            self.transactions.append(t)
         print('filter kwargs:', self.filter_kwargs)
         self.upload_finished.emit()
         self.finished.emit()
@@ -331,6 +329,26 @@ class ZKLoader(QObject):
         self.finished.emit()
         self.download_finished.emit()
 
+    def get_filter_kwargs(self):
+        if self.parent().filter_field_pin.text():
+            self.filter_kwargs['pin'] = self.parent().filter_field_pin.text()
+        else:
+            self.filter_kwargs.pop('pin', None)
+
+        if self.parent().filter_field_card.text():
+            self.filter_kwargs['card'] = self.parent().filter_field_card.text()
+        else:
+            self.filter_kwargs.pop('card', None)
+
+        if self.parent().filter_field_door.currentText():
+            self.filter_kwargs['door'] = self.parent().filter_field_door.currentText()
+        else:
+            self.filter_kwargs.pop('door', None)
+
+        if self.parent().filter_field_event_type.currentText():
+            self.filter_kwargs['event_type'] = self.parent().filter_field_event_type.currentText()
+        else:
+            self.filter_kwargs.pop('event_type', None)
 
 class Spinner(QWidget):
     def __init__(self, parent=None):
