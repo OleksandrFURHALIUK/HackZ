@@ -310,8 +310,8 @@ class ZKLoader(QObject):
         self.started.emit()
         self.upload_started.emit()
 
-        with self.zk_device as zk:
-            self.transactions = zk.table('Transaction').where(pin='504')
+        print(self.zk_device.device.serial_number)
+        self.transactions = self.zk_device.table('Transaction').where(pin='504')
         for tr in self.transactions:
             print(tr)
         for i in range(5):
