@@ -130,8 +130,9 @@ class MainWindow(QMainWindow):
         self.transactions_table.setItemDelegateForColumn(0, AlignDelegate(self.transactions_table))
         self.transactions_table.setItemDelegateForColumn(1, AlignDelegate(self.transactions_table))
         self.transactions_table.setItemDelegateForColumn(2, AlignDelegate(self.transactions_table))
-        self.transactions_table.setItemDelegateForColumn(3, AlignDelegate(self.transactions_table))
+        #self.transactions_table.setItemDelegateForColumn(3, AlignDelegate(self.transactions_table))
         self.transactions_table.setItemDelegateForColumn(3, ComboEventTypeDelegate(self.transactions_table))
+        self.transactions_table.setItemDelegateForColumn(6, ComboVerifyModeDelegate(self.transactions_table))
 
     def show_connecting_settings(self):
         setting_window = CommSettingDialogUI(self)
@@ -201,7 +202,6 @@ class ComboEntryExitDelegate(QStyledItemDelegate):
 
     def __init__(self, parent=None):
         super(ComboEntryExitDelegate, self).__init__(parent)
-        self.items = ['entry', 'exit']
         self.parent: QTableWidget = parent
 
     def initStyleOption(self, option, index):
@@ -212,22 +212,16 @@ class ComboEntryExitDelegate(QStyledItemDelegate):
     def createEditor(self, parent, option, index):
         """ createEditor(self, parent: QWidget, option: QStyleOptionViewItem, index: QModelIndex) -> QWidget """
         combobox = QComboBox(parent)
-        combobox.addItems(self.items)
+        for item in PassageDirection:
+            combobox.addItem(item.name, item.name)
 
-        if index.data() == 'entry':
-            combobox.setCurrentIndex(0)
-        elif index.data() == 'exit':
-            combobox.setCurrentIndex(1)
-        else:
-            combobox.setCurrentIndex(0)
         combobox.currentIndexChanged.connect(self.currentIndexChanged)
-
         combobox.currentTextChanged.connect(lambda value: self.currentTextChanged(index, value))
         combobox.destroyed.connect(self.destroyEditor)
         return combobox
 
     def setEditorData(self, editor, index):
-        pass
+        editor.setCurrentText(index.data())
         # value = index.data()
         # print('set editor data')
         # editor.setCurrentIndex(1)
@@ -247,7 +241,8 @@ class ComboEntryExitDelegate(QStyledItemDelegate):
                 self.parent.setItem(self.parent.currentRow(), 3, QTableWidgetItem('0'))
             if not self.parent.item(self.parent.currentRow(), 6):
                 self.parent.setItem(self.parent.currentRow(), 6, QTableWidgetItem('only_card'))
-    # @pyqtSlot()
+
+    @pyqtSlot()
     def currentIndexChanged(self):
         print('index changed', self.sender())
         # self.commitData.emit(self.sender())
@@ -274,9 +269,9 @@ class ComboEventTypeDelegate(QStyledItemDelegate):
             value: DocValue
             combobox.addItem(f'{key} {value.doc}', key)
 
-        if self.parent.item(self.parent.currentRow(), 3):
-            print(self.parent.currentItem())
-            combobox.setCurrentIndex(int(self.parent.currentItem().text()))
+        #if self.parent.item(self.parent.currentRow(), 3):
+            #print(self.parent.currentItem())
+            #combobox.setCurrentIndex(int(self.parent.currentItem().text()))
         combobox.currentIndexChanged.connect(self.currentIndexChanged)
 
         combobox.currentTextChanged.connect(lambda value: self.currentTextChanged(index, value))
@@ -284,7 +279,7 @@ class ComboEventTypeDelegate(QStyledItemDelegate):
         return combobox
 
     def setEditorData(self, editor, index):
-        pass
+        editor.setCurrentText(index.data())
         # value = index.data()
         # print('set editor data')
         # editor.setCurrentIndex(1)
@@ -292,6 +287,51 @@ class ComboEventTypeDelegate(QStyledItemDelegate):
     def destroyEditor(self, editor, index):
         print('combo destroyed')
         self.parent.setItem(self.parent.currentRow(), 3, QTableWidgetItem(str(editor.currentData())))
+        #elif event_type == 'exit':
+            #self.parent.setItem(self.parent.currentRow(), 2, QTableWidgetItem('2'))
+
+    # @pyqtSlot()
+    def currentIndexChanged(self):
+        print('index changed', self.sender())
+        # self.commitData.emit(self.sender())
+
+    # @pyqtSlot()
+    def currentTextChanged(self, index, value):
+        print('current text changed')
+
+
+class ComboVerifyModeDelegate(QStyledItemDelegate):
+    def __init__(self, parent=None):
+        super(ComboVerifyModeDelegate, self).__init__(parent)
+        self.parent: QTableWidget = parent
+
+    def initStyleOption(self, option, index):
+        """ initStyleOption(self, option: QStyleOptionViewItem, index: QModelIndex) """
+        super(ComboVerifyModeDelegate, self).initStyleOption(option, index)
+        option.displayAlignment = Qt.AlignVCenter | Qt.AlignLeft
+
+    def createEditor(self, parent, option, index):
+
+        combobox = QComboBox(parent)
+        for item in VerifyMode:
+            combobox.addItem(item.name, item.name)
+
+        combobox.currentIndexChanged.connect(self.currentIndexChanged)
+        combobox.currentTextChanged.connect(lambda value: self.currentTextChanged(index, value))
+        combobox.destroyed.connect(self.destroyEditor)
+        return combobox
+
+    def setEditorData(self, editor, index):
+        editor.setCurrentText(index.data())
+        print('set editor data')
+
+        # value = index.data()
+        # print('set editor data')
+        # editor.setCurrentIndex(1)
+
+    def destroyEditor(self, editor, index):
+        print('combo destroyed')
+        #self.parent.setItem(self.parent.currentRow(), 6, QTableWidgetItem(str(editor.currentData())))
         #elif event_type == 'exit':
             #self.parent.setItem(self.parent.currentRow(), 2, QTableWidgetItem('2'))
 
