@@ -411,7 +411,7 @@ class ZKLoader(QObject):
         if self.parent().filter_field_door.currentText() == 'Any':
             self.filter_kwargs.pop('door', None)
         else:
-            self.filter_kwargs['door'] = self.parent().filter_field_door.currentText()
+            self.filter_kwargs['door'] = int(self.parent().filter_field_door.currentText())
 
         if self.parent().filter_field_event_type.currentText() == 'Any':
             self.filter_kwargs.pop('event_type', None)
