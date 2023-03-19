@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem
+from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QDateTimeEdit
 from pyzkaccess import Transaction
 from pyzkaccess.tables import Transaction, User
 from pyzkaccess.common import ZKDatetimeUtils
