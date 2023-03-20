@@ -3,7 +3,7 @@ from time import sleep
 from typing import List
 import os
 from PyQt5.QtCore import Qt, pyqtSlot, QObject, pyqtSignal, QThread, QTimer, pyqtProperty, QPropertyAnimation, \
-    QThreadPool, QModelIndex
+    QThreadPool, QModelIndex, QMargins
 from PyQt5.QtGui import QStandardItemModel, QBrush, QColor, QPainter, QPixmap, QIntValidator
 from PyQt5.QtWidgets import QMainWindow, QComboBox, QLabel, QPushButton, QTableWidget, QMenu, QAction, QDateTimeEdit, \
     QSpinBox, QLineEdit, QHeaderView, QTableView, QItemDelegate, QTableWidgetItem, QMessageBox, QStyledItemDelegate, \
@@ -20,10 +20,6 @@ from utils import load_transactions_from_file, save_transactions_to_file, load_t
     get_transactions_from_table
 
 from pyzkaccess import ZKAccess, ZK200, DocValue
-
-# todo add setting windows
-# todo calculate attendance records
-# todo add startup password window
 
 
 class MainWindow(QMainWindow):
@@ -140,6 +136,10 @@ class MainWindow(QMainWindow):
         # change column wide in transactions table
         for i in range(self.transactions_table.columnCount()):
             self.transactions_table.horizontalHeader().setSectionResizeMode(i, QHeaderView.ResizeToContents)
+            if i == 5 :
+                self.transactions_table.horizontalHeader().setSectionResizeMode(i, QHeaderView.Fixed)
+                self.transactions_table.setColumnWidth(5, 200)
+
         # self.transactions_table.resizeColumnsToContents()
         self.transactions_table.setItemDelegateForColumn(4, ComboEntryExitDelegate(self.transactions_table))
         self.transactions_table.setItemDelegateForColumn(0, AlignDelegate(self.transactions_table))
@@ -147,6 +147,7 @@ class MainWindow(QMainWindow):
         self.transactions_table.setItemDelegateForColumn(2, AlignDelegate(self.transactions_table))
         # self.transactions_table.setItemDelegateForColumn(3, AlignDelegate(self.transactions_table))
         self.transactions_table.setItemDelegateForColumn(3, ComboEventTypeDelegate(self.transactions_table))
+        self.transactions_table.setItemDelegateForColumn(5, DateTimeDelegate(self.transactions_table))
         self.transactions_table.setItemDelegateForColumn(6, ComboVerifyModeDelegate(self.transactions_table))
 
     def show_connecting_settings(self):
@@ -161,7 +162,8 @@ class MainWindow(QMainWindow):
     def btn_search_clicked_handler(self):
         print('btn search clicked')
         # self.zk_transactions = load_transactions_from_file('transactions')
-        load_transactions_to_table(self.zk_loader.transactions, self.transactions_table)
+        self.transactions_table.setColumnWidth(5, self.transactions_table.columnWidth(5) + 15)
+        #load_transactions_to_table(self.zk_loader.transactions, self.transactions_table)
 
     def btn_add_transaction_clicked_handler(self):
         print('btn add record clicked')
@@ -192,7 +194,7 @@ class MainWindow(QMainWindow):
 
     def btn_calculate_attendance_time_clicked_handler(self):
         print('btn calculate time clicked')
-        #self.lbl_attendance_time.setVisible(not self.lbl_attendance_time.isVisible())
+        # self.lbl_attendance_time.setVisible(not self.lbl_attendance_time.isVisible())
         print(self.filter_field_event_type.currentText())
 
     def btn_upload_transactions_from_device_clicked_handler(self):
@@ -379,6 +381,48 @@ class ComboVerifyModeDelegate(QStyledItemDelegate):
     # @pyqtSlot()
     def currentTextChanged(self, index, value):
         print('current text changed')
+
+
+class DateTimeDelegate(QStyledItemDelegate):
+    def __init__(self, parent=None):
+        super(DateTimeDelegate, self).__init__(parent)
+        self.parent: QTableWidget = parent
+
+    def initStyleOption(self, option: QStyleOptionViewItem, index: QModelIndex):
+        """ initStyleOption(self, option: QStyleOptionViewItem, index: QModelIndex) """
+        super(DateTimeDelegate, self).initStyleOption(option, index)
+        option.displayAlignment = Qt.AlignVCenter | Qt.AlignCenter
+
+    def createEditor(self, parent, option, index):
+        editor = QDateTimeEdit(parent)
+        editor.setDisplayFormat('yyyy-MM-dd HH:mm:ss')
+
+        editor.setDateTime(datetime.strptime(index.data(), '%Y-%m-%d %H:%M:%S'))
+
+        editor.dateTimeChanged.connect(self.date_time_changed)
+        editor.dateTimeChanged.connect(lambda: print(editor.dateTime()))
+        editor.destroyed.connect(self.destroyEditor)
+
+        return editor
+
+    def setEditorData(self, editor, index):
+        # editor.setCurrentText(index.data())
+        print('set editor data')
+
+    def destroyEditor(self, editor, index):
+        print('editor destroyed')
+
+        item = QTableWidgetItem(editor.dateTime().toString('yyyy-MM-dd HH:mm:ss'))
+        self.parent.setItem(self.parent.currentRow(), 5, item)
+
+        # self.parent.setItem(self.parent.currentRow(), 6, QTableWidgetItem(str(editor.currentData())))
+        # elif event_type == 'exit':
+        # self.parent.setItem(self.parent.currentRow(), 2, QTableWidgetItem('2'))
+
+        # @pyqtSlot()
+
+    def date_time_changed(self):
+        print('date time changed')
 
 
 class AlignDelegate(QStyledItemDelegate):
