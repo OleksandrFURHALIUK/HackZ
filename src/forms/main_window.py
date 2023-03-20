@@ -161,9 +161,7 @@ class MainWindow(QMainWindow):
 
     def btn_search_clicked_handler(self):
         print('btn search clicked')
-        # self.zk_transactions = load_transactions_from_file('transactions')
-        self.transactions_table.setColumnWidth(5, self.transactions_table.columnWidth(5) + 15)
-        #load_transactions_to_table(self.zk_loader.transactions, self.transactions_table)
+
 
     def btn_add_transaction_clicked_handler(self):
         print('btn add record clicked')
