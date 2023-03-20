@@ -192,7 +192,7 @@ class MainWindow(QMainWindow):
 
     def btn_calculate_attendance_time_clicked_handler(self):
         print('btn calculate time clicked')
-        self.lbl_attendance_time.setVisible(not self.lbl_attendance_time.isVisible())
+        #self.lbl_attendance_time.setVisible(not self.lbl_attendance_time.isVisible())
         print(self.filter_field_event_type.currentText())
 
     def btn_upload_transactions_from_device_clicked_handler(self):
@@ -239,7 +239,10 @@ class MainWindow(QMainWindow):
                                                   options=options)
         if fileName:
             transactions = get_transactions_from_table(self.transactions_table)
-            save_transactions_to_file(transactions, fileName + '.tr')
+            if '.tr' in fileName:
+                save_transactions_to_file(transactions, fileName + '.tr')
+            else:
+                save_transactions_to_file(transactions, fileName)
             print(fileName)
 
 
