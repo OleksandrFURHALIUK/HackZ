@@ -240,9 +240,9 @@ class MainWindow(QMainWindow):
         if fileName:
             transactions = get_transactions_from_table(self.transactions_table)
             if '.tr' in fileName:
-                save_transactions_to_file(transactions, fileName + '.tr')
-            else:
                 save_transactions_to_file(transactions, fileName)
+            else:
+                save_transactions_to_file(transactions, fileName + '.tr')
             print(fileName)
 
 
