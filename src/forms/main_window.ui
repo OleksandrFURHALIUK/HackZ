@@ -583,6 +583,9 @@ selection-color: rgb(153, 193, 241);</string>
    <property name="text">
     <string>Відкрити</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
   </action>
   <action name="save_file">
    <property name="icon">
@@ -591,6 +594,9 @@ selection-color: rgb(153, 193, 241);</string>
    </property>
    <property name="text">
     <string>Зберегти</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="show_connection_settings">

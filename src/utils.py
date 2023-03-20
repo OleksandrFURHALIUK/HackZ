@@ -43,7 +43,7 @@ def save_transactions_to_file(transactions: List[Transaction], filename: str = '
     :param filename: name of file
     :return: None
     """
-    with open(filename, 'x') as file:
+    with open(filename, 'w') as file:
         for t in transactions:
             row = f'card={t.card}, ' \
                   f'door={t.door}, ' \

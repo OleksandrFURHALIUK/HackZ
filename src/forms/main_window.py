@@ -21,6 +21,10 @@ from utils import load_transactions_from_file, save_transactions_to_file, load_t
 
 from pyzkaccess import ZKAccess, ZK200, DocValue
 
+# todo add setting windows
+# todo calculate attendance records
+# todo add startup password window
+
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -55,7 +59,7 @@ class MainWindow(QMainWindow):
         # menu
         self.menu_settings: QMenu = self.findChild(QMenu, 'menu_settings')
         self.action_show_connecting_settings: QAction = self.findChild(QAction, 'show_connection_settings')
-        self.action_open_file: QAction = self.findChild(QAction,'open_file')
+        self.action_open_file: QAction = self.findChild(QAction, 'open_file')
         self.action_save_file: QAction = self.findChild(QAction, 'save_file')
 
         # define zk
@@ -212,13 +216,13 @@ class MainWindow(QMainWindow):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(self, "Open trnsactions file", "",
-                                                  "All Files (*);;Python Files (*.py);;Transactions files (*.tr)",
+                                                  "Transaction Files (*.tr);;Text Files (*.txt);;All Files (*)",
                                                   options=options)
         if fileName:
             print('Opening', fileName)
             try:
-                transactions = load_transactions_from_file(fileName)
-                load_transactions_to_table(transactions, self.transactions_table)
+                load_transactions_to_table(transactions=load_transactions_from_file(fileName),
+                                           table=self.transactions_table)
             except Exception as error:
                 msg = QMessageBox(self)
                 msg.setWindowTitle('Error')
@@ -226,17 +230,17 @@ class MainWindow(QMainWindow):
                 msg.setIcon(QMessageBox.Warning)
                 msg.exec()
 
-
     def save_file_handler(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getSaveFileName(self, "Save transactions as", "",
-                                                  "All Files (*);;Text Files (*.txt);;Transactions files (*.tr)",
+        # self.options |= QFileDialog.DontConfirmOverwrite
+        fileName, t = QFileDialog.getSaveFileName(self, "Save transactions as", "",
+                                                  "Transactions files (*.tr)",
                                                   options=options)
         if fileName:
-            print(fileName)
             transactions = get_transactions_from_table(self.transactions_table)
-            save_transactions_to_file(transactions, fileName)
+            save_transactions_to_file(transactions, fileName + '.tr')
+            print(fileName)
 
 
 class ComboEntryExitDelegate(QStyledItemDelegate):
