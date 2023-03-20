@@ -211,18 +211,28 @@ class MainWindow(QMainWindow):
     def open_file_handler(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "",
-                                                  "All Files (*);;Python Files (*.py)", options=options)
+        fileName, _ = QFileDialog.getOpenFileName(self, "Open trnsactions file", "",
+                                                  "All Files (*);;Python Files (*.py);;Transactions files (*.tr)",
+                                                  options=options)
         if fileName:
             print('Opening', fileName)
-            transactions = load_transactions_from_file(fileName)
-            load_transactions_to_table(transactions, self.transactions_table)
+            try:
+                transactions = load_transactions_from_file(fileName)
+                load_transactions_to_table(transactions, self.transactions_table)
+            except Exception as error:
+                msg = QMessageBox(self)
+                msg.setWindowTitle('Error')
+                msg.setText(f'Error during opening file\n{str(error)}')
+                msg.setIcon(QMessageBox.Warning)
+                msg.exec()
+
 
     def save_file_handler(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getSaveFileName(self, "QFileDialog.getSaveFileName()", "",
-                                                  "All Files (*);;Text Files (*.txt)", options=options)
+        fileName, _ = QFileDialog.getSaveFileName(self, "Save transactions as", "",
+                                                  "All Files (*);;Text Files (*.txt);;Transactions files (*.tr)",
+                                                  options=options)
         if fileName:
             print(fileName)
             transactions = get_transactions_from_table(self.transactions_table)
