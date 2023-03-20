@@ -295,7 +295,7 @@ class ComboEntryExitDelegate(QStyledItemDelegate):
         print('index changed', self.sender())
         # self.commitData.emit(self.sender())
 
-    # @pyqtSlot()
+    @pyqtSlot()
     def currentTextChanged(self, index, value):
         print('current text changed')
 
