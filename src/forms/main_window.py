@@ -226,7 +226,7 @@ class MainWindow(QMainWindow):
         if fileName:
             print(fileName)
             transactions = get_transactions_from_table(self.transactions_table)
-            save_transactions_to_file(transactions, "test_dlg")
+            save_transactions_to_file(transactions, fileName)
 
 
 class ComboEntryExitDelegate(QStyledItemDelegate):
