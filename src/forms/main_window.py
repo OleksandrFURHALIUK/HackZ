@@ -316,6 +316,7 @@ class ComboEventTypeDelegate(QStyledItemDelegate):
             value: DocValue
             combobox.addItem(f'{key} {value.doc}', key)
 
+
         combobox.currentIndexChanged.connect(self.currentIndexChanged)
         combobox.currentTextChanged.connect(lambda val: self.currentTextChanged(index, val))
         combobox.destroyed.connect(self.destroyEditor)
