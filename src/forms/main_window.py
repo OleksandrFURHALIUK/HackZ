@@ -7,7 +7,7 @@ from PyQt5.QtCore import Qt, pyqtSlot, QObject, pyqtSignal, QThread, QTimer, pyq
 from PyQt5.QtGui import QStandardItemModel, QBrush, QColor, QPainter, QPixmap, QIntValidator
 from PyQt5.QtWidgets import QMainWindow, QComboBox, QLabel, QPushButton, QTableWidget, QMenu, QAction, QDateTimeEdit, \
     QSpinBox, QLineEdit, QHeaderView, QTableView, QItemDelegate, QTableWidgetItem, QMessageBox, QStyledItemDelegate, \
-    QStyleOptionViewItem, QWidget
+    QStyleOptionViewItem, QWidget, QFileDialog
 from PyQt5 import uic, QtCore
 from datetime import datetime, timedelta, time
 from pyzkaccess.enums import PassageDirection, EVENT_TYPES, VerifyMode
@@ -55,6 +55,8 @@ class MainWindow(QMainWindow):
         # menu
         self.menu_settings: QMenu = self.findChild(QMenu, 'menu_settings')
         self.action_show_connecting_settings: QAction = self.findChild(QAction, 'show_connection_settings')
+        self.action_open_file: QAction = self.findChild(QAction,'open_file')
+        self.action_save_file: QAction = self.findChild(QAction, 'save_file')
 
         # define zk
         self.wait_dialog = WaitPopUpWindow(self)
@@ -67,6 +69,7 @@ class MainWindow(QMainWindow):
         self.setup_ui()
 
     def setup_ui(self):
+
         # define events handler
         self.btn_search.clicked.connect(self.btn_search_clicked_handler)
         self.btn_add_transaction.clicked.connect(self.btn_add_transaction_clicked_handler)
@@ -78,12 +81,16 @@ class MainWindow(QMainWindow):
         self.btn_download_transactions_to_device.clicked.connect(
             self.btn_download_transactions_to_device_clicked_handler)
 
-        # setting auto calculate rows count
-        self.transactions_table.model().rowsRemoved.connect(self.calculate_rows)
-        self.transactions_table.model().rowsInserted.connect(self.calculate_rows)
+        # open and save
+        self.action_open_file.triggered.connect(self.open_file_handler)
+        self.action_save_file.triggered.connect(self.save_file_handler)
 
         # menu settings
         self.action_show_connecting_settings.triggered.connect(self.show_connecting_settings)
+
+        # setting auto calculate rows count
+        self.transactions_table.model().rowsRemoved.connect(self.calculate_rows)
+        self.transactions_table.model().rowsInserted.connect(self.calculate_rows)
 
         # configure signals for closing wait window
         self.zk_loader.finished.connect(self.wait_dialog.allow_close)
@@ -200,6 +207,26 @@ class MainWindow(QMainWindow):
 
     def update_transactions_table(self):
         load_transactions_to_table(self.zk_loader.transactions, self.transactions_table)
+
+    def open_file_handler(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "",
+                                                  "All Files (*);;Python Files (*.py)", options=options)
+        if fileName:
+            print('Opening', fileName)
+            transactions = load_transactions_from_file(fileName)
+            load_transactions_to_table(transactions, self.transactions_table)
+
+    def save_file_handler(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getSaveFileName(self, "QFileDialog.getSaveFileName()", "",
+                                                  "All Files (*);;Text Files (*.txt)", options=options)
+        if fileName:
+            print(fileName)
+            transactions = get_transactions_from_table(self.transactions_table)
+            save_transactions_to_file(transactions, "test_dlg")
 
 
 class ComboEntryExitDelegate(QStyledItemDelegate):

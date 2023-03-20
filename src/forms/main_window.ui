@@ -561,8 +561,8 @@ selection-color: rgb(153, 193, 241);</string>
     <property name="title">
      <string>Файл</string>
     </property>
-    <addaction name="open"/>
-    <addaction name="save"/>
+    <addaction name="open_file"/>
+    <addaction name="save_file"/>
    </widget>
    <widget class="QMenu" name="menu_settings">
     <property name="title">
@@ -575,7 +575,7 @@ selection-color: rgb(153, 193, 241);</string>
    <addaction name="menu_settings"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="open">
+  <action name="open_file">
    <property name="icon">
     <iconset theme="document-open">
      <normaloff>../../../../.designer/backup</normaloff>../../../../.designer/backup</iconset>
@@ -584,7 +584,7 @@ selection-color: rgb(153, 193, 241);</string>
     <string>Відкрити</string>
    </property>
   </action>
-  <action name="save">
+  <action name="save_file">
    <property name="icon">
     <iconset theme="document-save-as">
      <normaloff>../../../../.designer/backup</normaloff>../../../../.designer/backup</iconset>
