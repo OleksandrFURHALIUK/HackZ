@@ -68,13 +68,11 @@ def calculate_attendance_time(transactions: List, start_date_time: datetime, end
             if i == 0 and transaction.entry_exit == PassageDirection.entry:
                 # time to end of day
                 attendance_time += 86400 - (ZKDatetimeUtils.datetime_to_zkctime(transaction.time) % 86400)
-                continue
             elif 0 <= i < len(transactions) - 1 and transaction.entry_exit == PassageDirection.exit \
                     and transactions[i + 1].entry_exit == PassageDirection.entry:
                 exit_time = ZKDatetimeUtils.datetime_to_zkctime(transaction.time)
                 entry_time = ZKDatetimeUtils.datetime_to_zkctime(transactions[i + 1].time)
                 attendance_time += exit_time - entry_time
-                continue
             elif i == len(transactions)-1 and PassageDirection.exit and transactions[i-1].entry_exit == PassageDirection.entry:
                 attendance_time += ZKDatetimeUtils.datetime_to_zkctime(transaction.time) % 86400
         print('attendance_time =', attendance_time / 60 / 60)
