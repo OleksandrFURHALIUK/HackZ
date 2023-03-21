@@ -1,4 +1,5 @@
-from datetime import datetime
+import time
+from datetime import datetime, timedelta
 from typing import List
 
 from PyQt5.QtCore import Qt
@@ -56,12 +57,28 @@ def save_transactions_to_file(transactions: List[Transaction], filename: str = '
             file.write(row)
 
 
-def calculate_attendance_time(transactions: List) -> datetime:
+def calculate_attendance_time(transactions: List, start_date_time: datetime, end_date_time: datetime) -> str:
     if transactions:
-        for transaction in transactions:
-            print(transaction)
-    attendance_time = ''
-    return attendance_time
+
+        f_transactions = filter(lambda t: start_date_time < t.time < end_date_time,
+                                transactions)
+
+        transactions = sorted(f_transactions, key=lambda t: t.time, reverse=True)
+        attendance_time = 0
+        for i, transaction in enumerate(transactions):
+            if i == 0 and transaction.entry_exit == PassageDirection.entry:
+                # time to end of day
+                attendance_time += 86400-(ZKDatetimeUtils.datetime_to_zkctime(transaction.time) % 86400)
+                continue
+            elif 0<=i<len(transactions)-1 and transaction.entry_exit == PassageDirection.exit:
+                exit_time = ZKDatetimeUtils.datetime_to_zkctime(transaction.time)
+                entry_time = ZKDatetimeUtils.datetime_to_zkctime(transactions[i + 1].time)
+                attendance_time += exit_time - entry_time
+                continue
+            elif i == len(transactions) and PassageDirection.exit:
+                attendance_time += ZKDatetimeUtils.datetime_to_zkctime(transaction.time) % 86400
+    print('attendance_time =', attendance_time / 60 / 60)
+    return str(round(attendance_time/60/60,2))
 
 
 def load_transactions_to_table(transactions: List, table: QTableWidget):
@@ -112,7 +129,3 @@ def get_transactions_from_table(table: QTableWidget):
                                   time=time)
         transactions.append(transaction)
     return transactions
-
-
-
-

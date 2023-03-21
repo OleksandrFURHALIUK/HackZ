@@ -17,7 +17,7 @@ from pyqtspinner import WaitingSpinner
 from forms.comm_setting_dialog import CommSettingDialogUI
 from forms.wait_popup import WaitPopUpWindow
 from utils import load_transactions_from_file, save_transactions_to_file, load_transactions_to_table, \
-    get_transactions_from_table
+    get_transactions_from_table, calculate_attendance_time
 
 from pyzkaccess import ZKAccess, ZK200, DocValue
 
@@ -136,7 +136,7 @@ class MainWindow(QMainWindow):
         # change column wide in transactions table
         for i in range(self.transactions_table.columnCount()):
             self.transactions_table.horizontalHeader().setSectionResizeMode(i, QHeaderView.ResizeToContents)
-            if i == 5 :
+            if i == 5:
                 self.transactions_table.horizontalHeader().setSectionResizeMode(i, QHeaderView.Fixed)
                 self.transactions_table.setColumnWidth(5, 200)
 
@@ -161,7 +161,7 @@ class MainWindow(QMainWindow):
 
     def btn_search_clicked_handler(self):
         print('btn search clicked')
-
+        load_transactions_to_table(load_transactions_from_file('108.tr'), self.transactions_table)
 
     def btn_add_transaction_clicked_handler(self):
         print('btn add record clicked')
@@ -192,8 +192,11 @@ class MainWindow(QMainWindow):
 
     def btn_calculate_attendance_time_clicked_handler(self):
         print('btn calculate time clicked')
-        # self.lbl_attendance_time.setVisible(not self.lbl_attendance_time.isVisible())
-        print(self.filter_field_event_type.currentText())
+
+        attendance_time = calculate_attendance_time(transactions=get_transactions_from_table(self.transactions_table),
+                                                    start_date_time=self.filter_field_start_date_time.dateTime().toPyDateTime(),
+                                                    end_date_time=self.filter_field_end_date_time.dateTime().toPyDateTime())
+        self.lbl_attendance_time.setText(f'Розрахований час: \n{attendance_time} годин')
 
     def btn_upload_transactions_from_device_clicked_handler(self):
         print('upload button pressed')
@@ -316,7 +319,6 @@ class ComboEventTypeDelegate(QStyledItemDelegate):
             value: DocValue
             combobox.addItem(f'{key} {value.doc}', key)
 
-
         combobox.currentIndexChanged.connect(self.currentIndexChanged)
         combobox.currentTextChanged.connect(lambda val: self.currentTextChanged(index, val))
         combobox.destroyed.connect(self.destroyEditor)
@@ -395,9 +397,10 @@ class DateTimeDelegate(QStyledItemDelegate):
     def createEditor(self, parent, option, index):
         editor = QDateTimeEdit(parent)
         editor.setDisplayFormat('yyyy-MM-dd HH:mm:ss')
-
-        editor.setDateTime(datetime.strptime(index.data(), '%Y-%m-%d %H:%M:%S'))
-
+        if index.data():
+            editor.setDateTime(datetime.strptime(index.data(), '%Y-%m-%d %H:%M:%S'))
+        else:
+            editor.setDateTime(datetime.now())
         editor.dateTimeChanged.connect(self.date_time_changed)
         editor.dateTimeChanged.connect(lambda: print(editor.dateTime()))
         editor.destroyed.connect(self.destroyEditor)
