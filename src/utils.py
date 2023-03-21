@@ -58,13 +58,12 @@ def save_transactions_to_file(transactions: List[Transaction], filename: str = '
 
 
 def calculate_attendance_time(transactions: List, start_date_time: datetime, end_date_time: datetime) -> str:
-    if transactions:
+    attendance_time = 0
 
+    if transactions:
         f_transactions = filter(lambda t: start_date_time < t.time < end_date_time,
                                 transactions)
-
         transactions = sorted(f_transactions, key=lambda t: t.time, reverse=True)
-        attendance_time = 0
         for i, transaction in enumerate(transactions):
             if i == 0 and transaction.entry_exit == PassageDirection.entry:
                 # time to end of day
@@ -77,8 +76,8 @@ def calculate_attendance_time(transactions: List, start_date_time: datetime, end
                 continue
             elif i == len(transactions) and PassageDirection.exit:
                 attendance_time += ZKDatetimeUtils.datetime_to_zkctime(transaction.time) % 86400
-    print('attendance_time =', attendance_time / 60 / 60)
-    return str(round(attendance_time/60/60,2))
+        print('attendance_time =', attendance_time / 60 / 60)
+    return str(round(attendance_time/60/60, 2))
 
 
 def load_transactions_to_table(transactions: List, table: QTableWidget):

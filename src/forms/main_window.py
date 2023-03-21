@@ -111,6 +111,9 @@ class MainWindow(QMainWindow):
         self.filter_field_end_date_time.setDate(last_day.date())
         self.filter_field_end_date_time.setTime(time(hour=23, minute=59, second=59))
 
+        self.filter_field_start_date_time.dateTimeChanged.connect(self.date_time_filter_warning)
+        self.filter_field_end_date_time.dateTimeChanged.connect(self.date_time_filter_warning)
+
         # configure card filter field
         self.filter_field_card.setValidator(QIntValidator())
         self.filter_field_card.setMaxLength(32)
@@ -214,6 +217,14 @@ class MainWindow(QMainWindow):
 
     def update_transactions_table(self):
         load_transactions_to_table(self.zk_loader.transactions, self.transactions_table)
+
+    def date_time_filter_warning(self):
+        if self.filter_field_start_date_time.dateTime().toPyDateTime() >= self.filter_field_end_date_time.dateTime().toPyDateTime():
+            msg = QMessageBox(self)
+            msg.setWindowTitle('DateTime filter error')
+            msg.setText('Початкова дата не може бути пізніша за кінцеву')
+            msg.setIcon(QMessageBox.Warning)
+            msg.exec()
 
     def open_file_handler(self):
         options = QFileDialog.Options()
