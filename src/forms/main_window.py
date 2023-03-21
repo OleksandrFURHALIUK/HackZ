@@ -3,7 +3,7 @@ from time import sleep
 from typing import List
 import os
 from PyQt5.QtCore import Qt, pyqtSlot, QObject, pyqtSignal, QThread, QTimer, pyqtProperty, QPropertyAnimation, \
-    QThreadPool, QModelIndex, QMargins
+    QThreadPool, QModelIndex, QMargins, QSettings
 from PyQt5.QtGui import QStandardItemModel, QBrush, QColor, QPainter, QPixmap, QIntValidator
 from PyQt5.QtWidgets import QMainWindow, QComboBox, QLabel, QPushButton, QTableWidget, QMenu, QAction, QDateTimeEdit, \
     QSpinBox, QLineEdit, QHeaderView, QTableView, QItemDelegate, QTableWidgetItem, QMessageBox, QStyledItemDelegate, \
@@ -64,6 +64,9 @@ class MainWindow(QMainWindow):
         self.zk_thread_pool.setMaxThreadCount(2)
         print("Multithreading with maximum %d threads" % self.zk_thread_pool.maxThreadCount())
         self.zk_loader = ZKLoader(self)
+
+        # define settings
+        self.settings = QSettings('src/app.ini', QSettings.IniFormat)
 
         # setup user interface
         self.setup_ui()
@@ -318,12 +321,10 @@ class ComboEntryExitDelegate(QStyledItemDelegate):
             if not self.parent.item(self.parent.currentRow(), 6):
                 self.parent.setItem(self.parent.currentRow(), 6, QTableWidgetItem('only_card'))
 
-    @pyqtSlot()
     def currentIndexChanged(self):
         print('index changed', self.sender())
         # self.commitData.emit(self.sender())
 
-    @pyqtSlot()
     def currentTextChanged(self, index, value):
         print('current text changed')
 
@@ -347,6 +348,7 @@ class ComboEventTypeDelegate(QStyledItemDelegate):
         combobox.currentIndexChanged.connect(self.currentIndexChanged)
         combobox.currentTextChanged.connect(lambda val: self.currentTextChanged(index, val))
         combobox.destroyed.connect(self.destroyEditor)
+
         return combobox
 
     def setEditorData(self, editor: QWidget, index: QModelIndex):
@@ -356,12 +358,10 @@ class ComboEventTypeDelegate(QStyledItemDelegate):
         print('combo destroyed', editor.currentData())
         self.parent.setItem(self.parent.currentRow(), 3, QTableWidgetItem(str(editor.currentData())))
 
-    # @pyqtSlot()
     def currentIndexChanged(self):
         print('index changed', self.sender())
         # self.commitData.emit(self.sender())
 
-    # @pyqtSlot()
     def currentTextChanged(self, index, value):
         print('current text changed')
 
@@ -384,14 +384,12 @@ class ComboVerifyModeDelegate(QStyledItemDelegate):
         combobox.currentIndexChanged.connect(self.currentIndexChanged)
         combobox.currentTextChanged.connect(lambda value: self.currentTextChanged(index, value))
         combobox.destroyed.connect(self.destroyEditor)
+
         return combobox
 
     def setEditorData(self, editor, index):
         editor.setCurrentText(index.data())
         print('set editor data')
-        # value = index.data()
-        # print('set editor data')
-        # editor.setCurrentIndex(1)
 
     def destroyEditor(self, editor, index):
         print('combo destroyed')
@@ -399,12 +397,10 @@ class ComboVerifyModeDelegate(QStyledItemDelegate):
         # elif event_type == 'exit':
         # self.parent.setItem(self.parent.currentRow(), 2, QTableWidgetItem('2'))
 
-    # @pyqtSlot()
     def currentIndexChanged(self):
         print('index changed', self.sender())
         # self.commitData.emit(self.sender())
 
-    # @pyqtSlot()
     def currentTextChanged(self, index, value):
         print('current text changed')
 
@@ -441,12 +437,6 @@ class DateTimeDelegate(QStyledItemDelegate):
 
         item = QTableWidgetItem(editor.dateTime().toString('yyyy-MM-dd HH:mm:ss'))
         self.parent.setItem(self.parent.currentRow(), 5, item)
-
-        # self.parent.setItem(self.parent.currentRow(), 6, QTableWidgetItem(str(editor.currentData())))
-        # elif event_type == 'exit':
-        # self.parent.setItem(self.parent.currentRow(), 2, QTableWidgetItem('2'))
-
-        # @pyqtSlot()
 
     def date_time_changed(self):
         print('date time changed')

@@ -73,7 +73,8 @@ def calculate_attendance_time(transactions: List, start_date_time: datetime, end
                 exit_time = ZKDatetimeUtils.datetime_to_zkctime(transaction.time)
                 entry_time = ZKDatetimeUtils.datetime_to_zkctime(transactions[i + 1].time)
                 attendance_time += exit_time - entry_time
-            elif i == len(transactions)-1 and PassageDirection.exit and transactions[i-1].entry_exit == PassageDirection.entry:
+            elif i == len(transactions) - 1 and PassageDirection.exit and transactions[
+                i - 1].entry_exit == PassageDirection.entry:
                 attendance_time += ZKDatetimeUtils.datetime_to_zkctime(transaction.time) % 86400
         print('attendance_time =', attendance_time / 60 / 60)
     return str(round(attendance_time / 60 / 60, 2))
@@ -107,7 +108,7 @@ def load_transactions_to_table(transactions: List, table: QTableWidget):
         # self.transactions_table.setItemDelegateForColumn(3, ComboEventTypeDelegate())
 
 
-def get_transactions_from_table(table: QTableWidget):
+def get_transactions_from_table(table: QTableWidget) -> List | None:
     transactions = []
     for row in range(table.rowCount()):
         pin = table.item(row, 0).text()
@@ -115,7 +116,7 @@ def get_transactions_from_table(table: QTableWidget):
         door = table.item(row, 2).text()
         event_type = table.item(row, 3).text()
         entry_exit = PassageDirection[table.item(row, 4).text()]
-        time = datetime.strptime(table.item(row, 5).text(), '%Y-%m-%d %H:%M:%S')
+        t_time = datetime.strptime(table.item(row, 5).text(), '%Y-%m-%d %H:%M:%S')
         verify_mode = VerifyMode[table.item(row, 6).text()]
 
         transaction = Transaction(card=card,
@@ -124,6 +125,8 @@ def get_transactions_from_table(table: QTableWidget):
                                   door=int(door),
                                   event_type=int(event_type),
                                   entry_exit=entry_exit,
-                                  time=time)
+                                  time=t_time)
         transactions.append(transaction)
     return transactions
+
+
