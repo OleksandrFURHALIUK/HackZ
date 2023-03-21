@@ -391,7 +391,7 @@ selection-color: rgb(153, 193, 241);</string>
         <item row="10" column="0">
          <widget class="QLabel" name="lbl_attendance_time">
           <property name="text">
-           <string>Розрахований час: 200,5 hour</string>
+           <string>Розрахований час: 0.0 годин</string>
           </property>
           <property name="textFormat">
            <enum>Qt::MarkdownText</enum>

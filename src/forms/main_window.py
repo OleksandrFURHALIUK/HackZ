@@ -195,11 +195,23 @@ class MainWindow(QMainWindow):
 
     def btn_calculate_attendance_time_clicked_handler(self):
         print('btn calculate time clicked')
-
-        attendance_time = calculate_attendance_time(transactions=get_transactions_from_table(self.transactions_table),
-                                                    start_date_time=self.filter_field_start_date_time.dateTime().toPyDateTime(),
-                                                    end_date_time=self.filter_field_end_date_time.dateTime().toPyDateTime())
-        self.lbl_attendance_time.setText(f'Розрахований час: \n{attendance_time} годин')
+        try:
+            transactions = get_transactions_from_table(self.transactions_table)
+            if transactions:
+                start_date_time = self.filter_field_start_date_time.dateTime().toPyDateTime()
+                end_date_time = self.filter_field_end_date_time.dateTime().toPyDateTime()
+                attendance_time = calculate_attendance_time(transactions=transactions,
+                                                            start_date_time=start_date_time,
+                                                            end_date_time=end_date_time)
+                self.lbl_attendance_time.setText(f'Розрахований час: \n{attendance_time} годин')
+            else:
+                raise ValueError
+        except Exception as error:
+            msg = QMessageBox(self)
+            msg.setWindowTitle('Помилка')
+            msg.setText('Не коректні дані в таблиці, або таблиця пуста')
+            msg.setIcon(QMessageBox.Information)
+            msg.exec()
 
     def btn_upload_transactions_from_device_clicked_handler(self):
         print('upload button pressed')
@@ -219,12 +231,14 @@ class MainWindow(QMainWindow):
         load_transactions_to_table(self.zk_loader.transactions, self.transactions_table)
 
     def date_time_filter_warning(self):
-        if self.filter_field_start_date_time.dateTime().toPyDateTime() >= self.filter_field_end_date_time.dateTime().toPyDateTime():
+        if self.filter_field_start_date_time.dateTime() >= self.filter_field_end_date_time.dateTime():
             msg = QMessageBox(self)
             msg.setWindowTitle('DateTime filter error')
             msg.setText('Початкова дата не може бути пізніша за кінцеву')
             msg.setIcon(QMessageBox.Warning)
+            self.filter_field_start_date_time.setDate(self.filter_field_end_date_time.date().addDays(-1))
             msg.exec()
+
 
     def open_file_handler(self):
         options = QFileDialog.Options()
