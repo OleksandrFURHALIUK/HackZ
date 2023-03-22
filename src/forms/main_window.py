@@ -1,3 +1,4 @@
+import base64
 import typing
 from time import sleep
 from typing import List
@@ -70,9 +71,9 @@ class MainWindow(QMainWindow):
         self.zk_thread_pool.setMaxThreadCount(2)
         print("Multithreading with maximum %d threads" % self.zk_thread_pool.maxThreadCount())
         self.zk_loader = ZKLoader(self,
-                                  ip_addr=self.settings.value('ZK_IP', '192.168.5.198'),
-                                  port=self.settings.value('ZK_PORT', '4370'),
-                                  password=self.settings.value('ZK_COMM_PASSWORD', ''))
+                                  ip_addr=base64.b64decode(self.settings.value('ZK_IP')).decode(),
+                                  port=base64.b64decode(self.settings.value('ZK_PORT')).decode(),
+                                  password=base64.b64decode(self.settings.value('ZK_COMM_PASSWORD')).decode())
 
         # define login window
         self.login_dialog = LoginDialog(self)
