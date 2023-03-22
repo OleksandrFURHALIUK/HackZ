@@ -29,9 +29,9 @@ class CommSettingDialogUI(QDialog):
         self.dialog_buttons.accepted.connect(self.update_settings)
 
     def update_settings(self) -> None:
-        self.settings.setValue('ZK_IP', base64.b64encode(self.field_ip_addr.text().encode('ascii')))
-        self.settings.setValue('ZK_PORT', base64.b64encode(self.field_port.text().encode('ascii')))
-        self.settings.setValue('ZK_COMM_PASSWORD', base64.b64encode(self.field_comm_password.text().encode('ascii')))
+        self.settings.setValue('ZK_IP', base64.b64encode(self.field_ip_addr.text().encode('ascii')).decode())
+        self.settings.setValue('ZK_PORT', base64.b64encode(self.field_port.text().encode('ascii')).decode())
+        self.settings.setValue('ZK_COMM_PASSWORD', base64.b64encode(self.field_comm_password.text().encode('ascii')).decode())
 
     def reading_settings(self):
 

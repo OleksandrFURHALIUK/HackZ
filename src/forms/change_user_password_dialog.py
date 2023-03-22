@@ -7,7 +7,6 @@ from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QLineEdit, QMessageBox, Q
 from PyQt5 import uic
 from PyQt5.QtGui import QIntValidator, QCloseEvent
 
-# todo make dialog for changing user password
 
 class ChangeUserPasswordDialog(QDialog):
     def __init__(self, parent=None):
