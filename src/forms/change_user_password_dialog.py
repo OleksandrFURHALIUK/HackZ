@@ -14,7 +14,7 @@ class ChangeUserPasswordDialog(QDialog):
         uic.loadUi(os.path.abspath('src/forms/change_user_password_dialog.ui'), self)
 
         self.installEventFilter(self)
-
+        self.setWindowTitle('Change Password Dialog')
         # define widgets
         self.field_old_user_password: QLineEdit = self.findChild(QLineEdit, 'field_old_user_password')
         self.lbl_old_user_password_not_match: QLabel = self.findChild(QLabel,'lbl_old_user_password_not_match')
