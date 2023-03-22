@@ -57,19 +57,22 @@ class MainWindow(QMainWindow):
         # menu
         self.menu_settings: QMenu = self.findChild(QMenu, 'menu_settings')
         self.action_show_connecting_settings: QAction = self.findChild(QAction, 'show_connection_settings')
-        self.action_change_user_password: QAction = self.findChild(QAction,'change_user_password')
+        self.action_change_user_password: QAction = self.findChild(QAction, 'change_user_password')
         self.action_open_file: QAction = self.findChild(QAction, 'open_file')
         self.action_save_file: QAction = self.findChild(QAction, 'save_file')
+
+        # define settings
+        self.settings = QSettings('src/app.ini', QSettings.IniFormat)
 
         # define zk
         self.wait_dialog = WaitPopUpWindow(self)
         self.zk_thread_pool = QThreadPool()
         self.zk_thread_pool.setMaxThreadCount(2)
         print("Multithreading with maximum %d threads" % self.zk_thread_pool.maxThreadCount())
-        self.zk_loader = ZKLoader(self)
-
-        # define settings
-        self.settings = QSettings('src/app.ini', QSettings.IniFormat)
+        self.zk_loader = ZKLoader(self,
+                                  ip_addr=self.settings.value('ZK_IP', '192.168.5.198'),
+                                  port=self.settings.value('ZK_PORT', '4370'),
+                                  password=self.settings.value('ZK_COMM_PASSWORD', ''))
 
         # define login window
         self.login_dialog = LoginDialog(self)
