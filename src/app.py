@@ -17,5 +17,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-    # todo add setting windows
-    # todo add startup password window
+

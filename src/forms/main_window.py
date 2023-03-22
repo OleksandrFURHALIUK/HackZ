@@ -7,7 +7,7 @@ from PyQt5.QtCore import Qt, pyqtSlot, QObject, pyqtSignal, QThread, QTimer, pyq
 from PyQt5.QtGui import QStandardItemModel, QBrush, QColor, QPainter, QPixmap, QIntValidator
 from PyQt5.QtWidgets import QMainWindow, QComboBox, QLabel, QPushButton, QTableWidget, QMenu, QAction, QDateTimeEdit, \
     QSpinBox, QLineEdit, QHeaderView, QTableView, QItemDelegate, QTableWidgetItem, QMessageBox, QStyledItemDelegate, \
-    QStyleOptionViewItem, QWidget, QFileDialog
+    QStyleOptionViewItem, QWidget, QFileDialog, QDialog
 from PyQt5 import uic, QtCore
 from datetime import datetime, timedelta, time
 from pyzkaccess.enums import PassageDirection, EVENT_TYPES, VerifyMode
@@ -16,6 +16,8 @@ from pyqtspinner import WaitingSpinner
 
 from forms.comm_setting_dialog import CommSettingDialogUI
 from forms.wait_popup import WaitPopUpWindow
+from forms.login_dialog import LoginDialog
+from forms.change_user_password_dialog import ChangeUserPasswordDialog
 from utils import load_transactions_from_file, save_transactions_to_file, load_transactions_to_table, \
     get_transactions_from_table, calculate_attendance_time
 
@@ -55,6 +57,7 @@ class MainWindow(QMainWindow):
         # menu
         self.menu_settings: QMenu = self.findChild(QMenu, 'menu_settings')
         self.action_show_connecting_settings: QAction = self.findChild(QAction, 'show_connection_settings')
+        self.action_change_user_password: QAction = self.findChild(QAction,'change_user_password')
         self.action_open_file: QAction = self.findChild(QAction, 'open_file')
         self.action_save_file: QAction = self.findChild(QAction, 'save_file')
 
@@ -68,6 +71,9 @@ class MainWindow(QMainWindow):
         # define settings
         self.settings = QSettings('src/app.ini', QSettings.IniFormat)
 
+        # define login window
+        self.login_dialog = LoginDialog(self)
+        self.login_dialog.exec()
         # setup user interface
         self.setup_ui()
 
@@ -89,7 +95,8 @@ class MainWindow(QMainWindow):
         self.action_save_file.triggered.connect(self.save_file_handler)
 
         # menu settings
-        self.action_show_connecting_settings.triggered.connect(self.show_connecting_settings)
+        self.action_show_connecting_settings.triggered.connect(self.show_connecting_settings_handler)
+        self.action_change_user_password.triggered.connect(self.change_user_password_handler)
 
         # setting auto calculate rows count
         self.transactions_table.model().rowsRemoved.connect(self.calculate_rows)
@@ -156,10 +163,15 @@ class MainWindow(QMainWindow):
         self.transactions_table.setItemDelegateForColumn(5, DateTimeDelegate(self.transactions_table))
         self.transactions_table.setItemDelegateForColumn(6, ComboVerifyModeDelegate(self.transactions_table))
 
-    def show_connecting_settings(self):
+    def show_connecting_settings_handler(self):
         setting_window = CommSettingDialogUI(self)
         setting_window.exec()
         print('show connecting settings')
+
+    def change_user_password_handler(self):
+        print('change password')
+        dialog = ChangeUserPasswordDialog(self)
+        dialog.exec()
 
     def calculate_rows(self):
         self.lbl_transactions_count.setText(f'Кількість записів: {self.transactions_table.rowCount()}')
@@ -211,8 +223,8 @@ class MainWindow(QMainWindow):
                 raise ValueError
         except Exception as error:
             msg = QMessageBox(self)
-            msg.setWindowTitle('Помилка')
-            msg.setText('Не коректні дані в таблиці, або таблиця пуста')
+            msg.setWindowTitle('Error')
+            msg.setText(f'No corerct data in the table or empty table\n{error}')
             msg.setIcon(QMessageBox.Information)
             msg.exec()
 
@@ -241,7 +253,6 @@ class MainWindow(QMainWindow):
             msg.setIcon(QMessageBox.Warning)
             self.filter_field_start_date_time.setDate(self.filter_field_end_date_time.date().addDays(-1))
             msg.exec()
-
 
     def open_file_handler(self):
         options = QFileDialog.Options()
@@ -459,7 +470,7 @@ class ZKLoader(QObject):
     finished = pyqtSignal()
     progress = pyqtSignal(int)
 
-    def __init__(self, parent=None, ip_addr='192.168.5.198', port=4370, password='ad256580'):
+    def __init__(self, parent=None, ip_addr='192.168.5.198', port=4370, password=''):
         super().__init__(parent)
 
         self.connection_string = f'protocol=TCP,ipaddress={ip_addr},port={port},timeout=4000,passwd={password}'
