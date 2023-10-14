@@ -1,1 +1,4 @@
-pyzkaccess
+pyzkaccess~=1.0
+PyQt5~=5.15.9
+pyqtspinner~=2.0.0
+pyinstaller
